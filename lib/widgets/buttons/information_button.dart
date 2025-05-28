@@ -3,7 +3,6 @@ import 'package:tudespensa/constants.dart';
 
 class InformationButton extends StatelessWidget {
   final Future<bool> Function() onSave;
-  final Widget nextPage;
   final String buttonText;
   final bool isLoading;
   final GlobalKey<FormState> formKey;
@@ -12,7 +11,6 @@ class InformationButton extends StatelessWidget {
   const InformationButton({
     super.key,
     required this.onSave,
-    required this.nextPage,
     required this.buttonText,
     required this.isLoading,
     required this.formKey,
@@ -26,13 +24,7 @@ class InformationButton extends StatelessWidget {
           ? null
           : () async {
               if (formKey.currentState!.validate()) {
-                final success = await onSave();
-                if (success && context.mounted) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => nextPage),
-                  );
-                }
+                await onSave(); // El onSave ya se encarga de todo
               }
             },
       style: ElevatedButton.styleFrom(

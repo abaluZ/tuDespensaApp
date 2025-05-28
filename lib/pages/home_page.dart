@@ -139,6 +139,7 @@ class _HomePageState extends State<HomePage> {
                 } else {
                   return Text(
                     'Bienvenido, ${profileProvider.userModel?.username}',
+                    style: TextStyle(color: Naranja, fontSize: 25),
                   );
                 }
               },
