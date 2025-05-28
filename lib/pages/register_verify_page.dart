@@ -107,21 +107,10 @@ class RegisterVerifyPage extends StatelessWidget {
                           password: passwordController.text.trim(),
                         );
                         if (success) {
-                          final response =
-                              await profileProvider.fetchUserProfile();
-                          if (response != null) {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (_) => GoalPage()),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Error al cargar el perfil"),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          }
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (_) => GoalPage()),
+                          );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
