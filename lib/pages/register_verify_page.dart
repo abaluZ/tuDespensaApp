@@ -5,7 +5,6 @@ import 'package:tudespensa/Utils/validators.dart';
 import 'package:tudespensa/provider/auth_provider.dart'; // Nuestro Provider personalizado
 import 'package:tudespensa/constants.dart'; // Colores
 import 'package:tudespensa/pages/goal_page.dart'; // pagina a la que se navega
-import 'package:tudespensa/provider/profile_provider.dart'; // Nuestro Provider personalizado
 import 'package:tudespensa/widgets/auth/auth_banner.dart'; // Widget del banner
 import 'package:tudespensa/widgets/auth/auth_botton.dart'; // Widget del boton
 import 'package:tudespensa/widgets/auth/auth_input.dart'; // Widget del input
@@ -23,7 +22,6 @@ class RegisterVerifyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
-    final profileProvider = context.watch<ProfileProvider>();
     final screenHeight = MediaQuery.of(context).size.height;
     final iskeyboard = MediaQuery.of(context).viewInsets.bottom != 0;
 
@@ -107,21 +105,10 @@ class RegisterVerifyPage extends StatelessWidget {
                           password: passwordController.text.trim(),
                         );
                         if (success) {
-                          final response =
-                              await profileProvider.fetchUserProfile();
-                          if (response != null) {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (_) => GoalPage()),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Error al cargar el perfil"),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          }
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (_) => GoalPage()),
+                          );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(

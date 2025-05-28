@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:tudespensa/Utils/preferences.dart';
 import 'package:tudespensa/constants.dart';
 import 'package:tudespensa/pages/wellcome_page.dart';
-import 'package:tudespensa/pages/goalPageV.dart';
 import 'package:tudespensa/provider/auth_provider.dart';
 import 'package:tudespensa/provider/gender_provider.dart';
 import 'package:tudespensa/provider/goal_provider.dart';
@@ -51,7 +50,8 @@ class MyApp extends StatelessWidget {
             Locale('es', ''), // Español
             Locale('en', ''), // Inglés
           ],
-          home: Goalpagev(),
+          home: WellcomePage(),
+          //home: Goalpagev(),
         ),
       ),
     );
