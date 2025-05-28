@@ -37,7 +37,6 @@ class Goalpagev extends StatelessWidget {
               colorTexto: Colors.black),
           SizedBox(height: 20),
           ObjetivoUsuario(
-            objetivo: 'Perder Peso',
             onEditar: () {
               // Acción al presionar el botón de editar
             },

@@ -63,7 +63,12 @@ class _HomePageState extends State<HomePage> {
                 ImageButton(
                   imagePath: 'assets/images/objetivoButton.png',
                   label: 'Objetivo',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Goalpagev()),
+                  );
+                  },
                 ),
                 const SizedBox(width: 15),
                 ImageButton(
