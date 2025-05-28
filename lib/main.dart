@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
             Locale('es', ''), // Español
             Locale('en', ''), // Inglés
           ],
-          home: Goalpagev(),
+          home: WellcomePage(),
         ),
       ),
     );

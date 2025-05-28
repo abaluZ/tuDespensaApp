@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:tudespensa/constants.dart';
+import 'package:tudespensa/pages/goalPageV.dart';
 import 'package:tudespensa/pages/settings_page.dart';
 import 'package:tudespensa/pages/despensa_page.dart';
 import 'package:tudespensa/pages/user_page.dart';
@@ -185,7 +186,12 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildImageButton(
-                    'assets/images/objetivoButton.png', 'Objetivo', () {}),
+                    'assets/images/objetivoButton.png', 'Objetivo', () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Goalpagev()),
+                  );
+                }),
                 const SizedBox(width: 15),
                 _buildImageButton(
                     'assets/images/recetasButton.png', 'Recetas', () {}),

@@ -6,7 +6,7 @@ import 'auth_provider.dart'; // Asegúrate de importar AuthProvider
 
 class GoalProvider extends ChangeNotifier {
   final String baseUrl =
-      'http://localhost:4000/api'; // ajusta si usas IP local o deploy
+      'http://192.168.0.12:4000/api'; // ajusta si usas IP local o deploy
 
   String? _selectedGoal;
   bool _isLoading = false;
