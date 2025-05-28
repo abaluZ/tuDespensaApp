@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tudespensa/constants.dart';
 import 'package:tudespensa/pages/user_page.dart';
+import 'package:tudespensa/widgets/information/banner_page.dart';
+import 'package:tudespensa/widgets/appBarV.dart';
 
 class DespensaPage extends StatelessWidget {
   const DespensaPage({super.key});
@@ -8,112 +10,29 @@ class DespensaPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: AppBarDespensa(
         backgroundColor: BackgroundColor,
-        leading: IconButton(icon: Icon(Icons.menu), onPressed: () {}),
-        title: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/images/logo.png',
-              width: 40,
-              height: 40,
+        onBack: () {
+          Navigator.pop(context);
+        },
+        onAvatarTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => UserPage(),
             ),
-            const SizedBox(width: 10),
-            Column(
-              children: [
-                Text(
-                  'Tu',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  'Despensa',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        centerTitle: true,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(3.0),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(50),
-              child: Stack(
-                children: [
-                  Image.asset(
-                    'assets/images/mono.png',
-                    width: 45,
-                    height: 45,
-                  ),
-                  Positioned.fill(
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        splashColor: Colors.yellow.shade100,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => UserPage(),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          )
-        ],
+          );
+        },
+        logoPath: 'assets/images/logo.png',
+        avatarPath: 'assets/images/icon.png',
       ),
       body: Column(
         children: [
           SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Despensa de',
-                    style: TextStyle(
-                      fontSize: 30,
-                      color: Naranja,
-                    ),
-                  ),
-                  Text(
-                    'Antoni',
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                      fontSize: 30,
-                      color: Naranja,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(width: 10),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.asset(
-                  'assets/images/despensa.png',
-                  width: 80,
-                  height: 80,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ],
-          ),
+          EncabezadoConImagen(
+              texto: 'Despensa de ...',
+              rutaImagen: 'assets/images/despensaHome.png',
+              colorTexto: Colors.black),
           SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
