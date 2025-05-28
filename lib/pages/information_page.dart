@@ -3,7 +3,10 @@ import 'package:provider/provider.dart'; // Importar Provider
 import 'package:tudespensa/Utils/validators.dart'; // Los validadores de los inputs
 import 'package:tudespensa/constants.dart'; // Colores
 import 'package:tudespensa/pages/home_page.dart'; // Página a la que se navegará
+import 'package:tudespensa/provider/gender_provider.dart';
 import 'package:tudespensa/provider/information_provider.dart'; // Importar el provider de información
+import 'package:tudespensa/provider/profile_provider.dart';
+import 'package:tudespensa/widgets/buttons/gender_button.dart';
 import 'package:tudespensa/widgets/buttons/information_button.dart'; // Widget del botón de información
 import 'package:tudespensa/widgets/information/date_input.dart'; // Widget del campo de fecha
 import 'package:tudespensa/widgets/information/information_banner.dart'; // Widget del banner
@@ -25,7 +28,6 @@ class _InformationPageState extends State<InformationPage> {
   final estaturaController = TextEditingController();
   final pesoController = TextEditingController();
   final edadController = TextEditingController();
-  final generoController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -35,13 +37,14 @@ class _InformationPageState extends State<InformationPage> {
     estaturaController.dispose();
     pesoController.dispose();
     edadController.dispose();
-    generoController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final isKeyboard = MediaQuery.of(context).viewInsets.bottom != 0;
+    final genderProvider = Provider.of<GenderProvider>(context);
+    final profileProvider = context.watch<ProfileProvider>();
     final provider = Provider.of<InformationProvider>(context);
 
     return Scaffold(
@@ -115,13 +118,39 @@ class _InformationPageState extends State<InformationPage> {
                       },
                     ),
                     SizedBox(height: 20),
-                    InformationInput(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GenderButton(
+                          title: "Masculino",
+                          color: Colors.blueAccent,
+                          textColor: Colors.white,
+                          icon: Icons.man_2_rounded,
+                          value: true,
+                          onTap: () {
+                            genderProvider.changeGender(true);
+                          },
+                        ),
+                        SizedBox(width: 10),
+                        GenderButton(
+                          title: "Femenino",
+                          color: Colors.deepPurple,
+                          textColor: Colors.white,
+                          icon: Icons.woman_2_rounded,
+                          value: false,
+                          onTap: () {
+                            genderProvider.changeGender(false);
+                          },
+                        ),
+                      ],
+                    ),
+                    /* InformationInput(
                       controller: generoController,
                       keyboardType: TextInputType.text,
                       label: "Género",
                       hintText: "Masculino/Femenino",
                       validator: genderValidator,
-                    ),
+                    ), */
                   ],
                 ),
               ),
@@ -130,15 +159,53 @@ class _InformationPageState extends State<InformationPage> {
             provider.isLoading
                 ? CircularProgressIndicator()
                 : InformationButton(
-                    onSave: () => provider.saveInformation(
-                      nombreController.text,
-                      apellidosController.text,
-                      estaturaController.text,
-                      pesoController.text,
-                      edadController.text,
-                      generoController.text,
-                    ),
-                    nextPage: const HomePage(),
+                    onSave: () async {
+                      if (_formKey.currentState!.validate()) {
+                        final success = await provider.saveInformation(
+                          nombreController.text,
+                          apellidosController.text,
+                          estaturaController.text,
+                          pesoController.text,
+                          selectedDate?.toIso8601String() ?? '',
+                          genderProvider.genderAsText!,
+                        );
+                        if (success) {
+                          final profileSuccess =
+                              await profileProvider.fetchUserProfile();
+                          print(profileProvider.userModel);
+                          if (profileSuccess != null && context.mounted) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const HomePage()),
+                            );
+                            return true;
+                          } else {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Error al cargar el perfil"),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                            return false;
+                          }
+                        } else {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content:
+                                    Text("Error al guardar la información"),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                          return false;
+                        }
+                      }
+                      return false;
+                    },
                     buttonText: "Siguiente",
                     isLoading: provider.isLoading,
                     formKey: _formKey,

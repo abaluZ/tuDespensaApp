@@ -105,9 +105,11 @@ class InformationProvider extends ChangeNotifier {
       _setLoading(false);
 
       if (res.statusCode == 201) {
+        print("todo esto pasa por if ${res.statusCode}");
         print("Información guardada correctamente");
         return true;
       } else {
+        print("todo esto pasa por else ${res.statusCode}");
         print("Error al guardar la información: ${res.body}");
         return false;
       }

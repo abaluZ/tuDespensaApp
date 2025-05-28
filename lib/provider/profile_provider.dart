@@ -33,6 +33,7 @@ class ProfileProvider with ChangeNotifier {
           'Authorization': 'Bearer $token',
         },
       );
+      print('esta es la respuesta: ${response.body}');
 
       if (response.statusCode == 200) {
         print("Entrando");

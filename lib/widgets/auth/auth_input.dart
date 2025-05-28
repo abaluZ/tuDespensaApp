@@ -22,6 +22,7 @@ class AuthInput extends StatelessWidget {
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
+        obscureText: obscureText,
         decoration: InputDecoration(
           label: Text(
             label,
