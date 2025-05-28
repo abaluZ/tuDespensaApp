@@ -5,7 +5,6 @@ import 'package:tudespensa/Utils/validators.dart';
 import 'package:tudespensa/provider/auth_provider.dart'; // Nuestro Provider personalizado
 import 'package:tudespensa/constants.dart'; // Colores
 import 'package:tudespensa/pages/goal_page.dart'; // pagina a la que se navega
-import 'package:tudespensa/provider/profile_provider.dart'; // Nuestro Provider personalizado
 import 'package:tudespensa/widgets/auth/auth_banner.dart'; // Widget del banner
 import 'package:tudespensa/widgets/auth/auth_botton.dart'; // Widget del boton
 import 'package:tudespensa/widgets/auth/auth_input.dart'; // Widget del input
@@ -23,7 +22,6 @@ class RegisterVerifyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
-    final profileProvider = context.watch<ProfileProvider>();
     final screenHeight = MediaQuery.of(context).size.height;
     final iskeyboard = MediaQuery.of(context).viewInsets.bottom != 0;
 
