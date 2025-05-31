@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(width: 15),
                 ImageButton(
                   imagePath: 'assets/images/recetasButton.png',
-                  label: 'Recetas',
+                  label: 'Recetas IA',
                   onTap: () {},
                 ),
               ],

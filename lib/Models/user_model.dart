@@ -35,7 +35,7 @@ class UserModel {
       plan: json['user']['plan'] ?? '',
       goal: json['goal']['goal'] ?? '',
       nombre: json['information']['Nombre'] ?? '',
-      apellidos: json['information']['apellidos'] ?? '',
+      apellidos: json['information']['Apellidos'] ?? '',
       estatura: json['information']['Estatura'] ?? '',
       peso: json['information']['Peso'] ?? '',
       edad: json['information']['Edad'] ?? '',

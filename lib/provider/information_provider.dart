@@ -133,7 +133,7 @@ class InformationProvider extends ChangeNotifier {
         return false;
       }
 
-      final res = await http.post(
+      final res = await http.put(
         Uri.parse('$baseUrl/information'),
         headers: {
           'Content-Type': 'application/json',
@@ -151,13 +151,13 @@ class InformationProvider extends ChangeNotifier {
 
       _setLoading(false);
 
-      if (res.statusCode == 201) {
+      if (res.statusCode == 200) {
         print("todo esto pasa por if ${res.statusCode}");
-        print("Información guardada correctamente");
+        print("Información actualizada correctamente");
         return true;
       } else {
         print("todo esto pasa por else ${res.statusCode}");
-        print("Error al guardar la información: ${res.body}");
+        print("Error al actualizar la información: ${res.body}");
         return false;
       }
     } catch (e) {

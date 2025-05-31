@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tudespensa/constants.dart';
+import 'package:tudespensa/pages/home_page.dart';
+import 'package:tudespensa/provider/profile_provider.dart';
+import 'package:tudespensa/widgets/appBarV.dart';
+import 'package:tudespensa/widgets/user/profile_field_input.dart';
 
 class CuentaPage extends StatelessWidget {
   const CuentaPage({super.key});
@@ -7,138 +12,103 @@ class CuentaPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: AppBarDespensa(
         backgroundColor: BackgroundColor,
-        leading: IconButton(icon: Icon(Icons.menu), onPressed: () {}),
-        title: Text('Cuenta', style: TextStyle(fontSize: 26)),
-        centerTitle: true,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Image.asset('assets/images/logo.png', width: 40, height: 40),
-          )
-        ],
+        onBack: () {
+          Navigator.pop(context);
+        },
+        onAvatarTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomePage(),
+            ),
+          );
+        },
+        logoPath: 'assets/images/logo.png',
+        avatarPath: 'assets/images/icon.png',
+        titleText: 'Cuenta',
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Center(
-              child: Card(
-                color: BackgroundColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                child: Container(
-                  width: 400,
-                  height: 550,
-                  margin: EdgeInsets.all(5),
-                  child: Padding(
-                    padding: const EdgeInsets.all(30.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'ID del usuraio',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Center(
+                child: Card(
+                  color: BackgroundColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  child: Container(
+                    width: 400,
+                    height: 550,
+                    margin: EdgeInsets.all(5),
+                    child: Padding(
+                      padding: const EdgeInsets.all(30.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Consumer<ProfileProvider>(
+                            builder: (context, profileProvider, child) {
+                              return ProfielInput(
+                                titulo: 'ID del usuraio',
+                                contenido: profileProvider.userModel?.id ?? '',
+                                cargando: profileProvider.isLoading,
+                                colorFondo: Verde,
+                              );
+                            },
                           ),
-                        ),
-                        SizedBox(height: 18),
-                        Container(
-                          width: double.infinity,
-                          height: 35,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 15,
-                            vertical: 6,
+                          SizedBox(height: 20),
+                          Consumer<ProfileProvider>(
+                            builder: (context, profileProvider, child) {
+                              return ProfielInput(
+                                titulo: 'E-mail',
+                                contenido:
+                                    profileProvider.userModel?.email ?? '',
+                                cargando: profileProvider.isLoading,
+                                colorFondo: Verde,
+                              );
+                            },
                           ),
-                          decoration: BoxDecoration(
-                            color: Verde,
-                            borderRadius: BorderRadius.circular(15),
+                          SizedBox(height: 20),
+                          Consumer<ProfileProvider>(
+                            builder: (context, profileProvider, child) {
+                              return ProfielInput(
+                                titulo: 'Suscripcion',
+                                contenido:
+                                    profileProvider.userModel?.plan ?? '',
+                                cargando: profileProvider.isLoading,
+                                colorFondo: Verde,
+                              );
+                            },
                           ),
-                          child: Text(
-                            '7d5773c3f456',
-                            style: const TextStyle(
-                              fontSize: 15,
-                              color: Colors.white,
+                          SizedBox(height: 20),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const HomePage()),
+                              );
+                            },
+                            child: Text(
+                              'Salir',
+                              style:
+                                  TextStyle(fontSize: 24, color: Colors.black),
                             ),
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        Text(
-                          'E-mail',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 18),
-                        Container(
-                          width: double.infinity,
-                          height: 35,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 15,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Verde,
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Text(
-                            'Juarez@gamil.com',
-                            style: const TextStyle(
-                              fontSize: 15,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        Text(
-                          'Suscripcion',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 18),
-                        Container(
-                          width: double.infinity,
-                          height: 35,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 15,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Verde,
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Text(
-                            'Cuenta gratuita',
-                            style: const TextStyle(
-                              fontSize: 15,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            'Salir',
-                            style: TextStyle(fontSize: 24, color: Colors.black),
-                          ),
-                        )
-                      ],
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

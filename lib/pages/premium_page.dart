@@ -12,6 +12,7 @@ class PremiumPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: BackgroundColor,
+      appBar: AppBar(),
       body: Column(
         children: [
           Stack(

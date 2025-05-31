@@ -13,14 +13,14 @@ import 'package:tudespensa/widgets/information/information_banner.dart'; // Widg
 import 'package:tudespensa/widgets/information/information_input.dart'; // Widget de los inputs de información
 import 'package:tudespensa/widgets/logo_empresa.dart'; // Widget del logo de la empresa
 
-class InformationPage extends StatefulWidget {
-  const InformationPage({super.key});
+class UpdateInformationPage extends StatefulWidget {
+  const UpdateInformationPage({super.key});
 
   @override
-  State<InformationPage> createState() => _InformationPageState();
+  State<UpdateInformationPage> createState() => _InformationPageState();
 }
 
-class _InformationPageState extends State<InformationPage> {
+class _InformationPageState extends State<UpdateInformationPage> {
   DateTime? selectedDate;
 
   final nombreController = TextEditingController();
@@ -144,13 +144,6 @@ class _InformationPageState extends State<InformationPage> {
                         ),
                       ],
                     ),
-                    /* InformationInput(
-                      controller: generoController,
-                      keyboardType: TextInputType.text,
-                      label: "Género",
-                      hintText: "Masculino/Femenino",
-                      validator: genderValidator,
-                    ), */
                   ],
                 ),
               ),

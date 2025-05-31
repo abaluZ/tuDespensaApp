@@ -10,6 +10,7 @@ class CompraPage extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: BackgroundColor,
+      appBar: AppBar(),
       body: Column(
         children: [
           Stack(
