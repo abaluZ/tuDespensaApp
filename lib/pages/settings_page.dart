@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:tudespensa/constants.dart';
 import 'package:tudespensa/icon_personalizado.dart';
+import 'package:tudespensa/pages/home_page.dart';
 import 'package:tudespensa/pages/premium_page.dart';
+import 'package:tudespensa/widgets/appBarV.dart';
 
 class AjustesPage extends StatelessWidget {
   const AjustesPage({super.key});
@@ -9,16 +11,22 @@ class AjustesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(icon: Icon(Icons.menu), onPressed: () {}),
-        title: Text('Ajuste', style: TextStyle(fontSize: 26)),
-        centerTitle: true,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Image.asset('assets/images/logo.png', width: 40, height: 40),
-          )
-        ],
+      appBar: AppBarDespensa(
+        backgroundColor: BackgroundColor,
+        onBack: () {
+          Navigator.pop(context);
+        },
+        onAvatarTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomePage(),
+            ),
+          );
+        },
+        logoPath: 'assets/images/logo.png',
+        avatarPath: 'assets/images/icon.png',
+        titleText: 'Ajustes',
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

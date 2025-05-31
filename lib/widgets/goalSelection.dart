@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tudespensa/constants.dart';
 import 'package:tudespensa/provider/profile_provider.dart';
 
 class ObjetivoUsuario extends StatelessWidget {

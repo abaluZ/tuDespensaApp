@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tudespensa/pages/user_page.dart';
+import 'package:tudespensa/provider/profile_provider.dart';
 
 class HeaderHome extends StatelessWidget {
   const HeaderHome({super.key});
@@ -34,13 +36,32 @@ class HeaderHome extends StatelessWidget {
                     color: Colors.transparent,
                     child: InkWell(
                       splashColor: Colors.yellow.shade100,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const UserPage(),
-                          ),
-                        );
+                      onTap: () async {
+                        print('[HeaderHome] Icono tocado');
+                        final profileProvider = context.read<ProfileProvider>();
+
+                        final response =
+                            await profileProvider.fetchUserProfile();
+                        print('[HeaderHome] Llamando a fetchUserProfile...');
+
+                        if (response != null) {
+                          print(
+                              '[HeaderHome] Perfil cargado exitosamente. Navegando a UserPage.');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const UserPage(),
+                            ),
+                          );
+                        } else {
+                          print('[HeaderHome] Error al cargar el perfil');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Error al cargar el perfil"),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
                       },
                     ),
                   ),

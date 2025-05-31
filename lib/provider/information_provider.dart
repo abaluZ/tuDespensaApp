@@ -119,4 +119,51 @@ class InformationProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  Future<bool> updateInformation(String nombre, String apellidos,
+      String estatura, String peso, String edad, String genero) async {
+    _setLoading(true);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      if (token == null) {
+        print("Token no encontrado");
+        _setLoading(false);
+        return false;
+      }
+
+      final res = await http.put(
+        Uri.parse('$baseUrl/information'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'Nombre': nombre,
+          'Apellidos': apellidos,
+          'Estatura': estatura,
+          'Peso': peso,
+          'Edad': edad,
+          'Genero': genero,
+        }),
+      );
+
+      _setLoading(false);
+
+      if (res.statusCode == 200) {
+        print("todo esto pasa por if ${res.statusCode}");
+        print("Información actualizada correctamente");
+        return true;
+      } else {
+        print("todo esto pasa por else ${res.statusCode}");
+        print("Error al actualizar la información: ${res.body}");
+        return false;
+      }
+    } catch (e) {
+      _setLoading(false);
+      print("Error en saveInformation: $e");
+      return false;
+    }
+  }
 }
