@@ -11,6 +11,7 @@ class UserModel {
   final String peso;
   final String edad;
   final String genero;
+  final int calories;
 
   UserModel({
     required this.username,
@@ -25,6 +26,7 @@ class UserModel {
     required this.peso,
     required this.edad,
     required this.genero,
+    required this.calories,
   });
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
@@ -40,6 +42,7 @@ class UserModel {
       peso: json['information']['Peso'] ?? '',
       edad: json['information']['Edad'] ?? '',
       genero: json['information']['Genero'] ?? '',
+      calories: json['calories'] ?? 0,
     );
   }
 }

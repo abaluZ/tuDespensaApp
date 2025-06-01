@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tudespensa/constants.dart';
 import 'package:tudespensa/pages/despensa_page.dart';
+import 'package:tudespensa/pages/goalPageV.dart';
 import 'package:tudespensa/provider/profile_provider.dart';
 import 'package:tudespensa/widgets/home/header_home.dart';
 import 'package:tudespensa/widgets/home/image_button.dart';
@@ -65,9 +66,10 @@ class _HomePageState extends State<HomePage> {
                   label: 'Objetivo',
                   onTap: () {
                     Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Goalpagev()),
-                  );
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Goalpagev()),
+                    );
                   },
                 ),
                 const SizedBox(width: 15),
