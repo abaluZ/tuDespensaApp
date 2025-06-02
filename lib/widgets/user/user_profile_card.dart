@@ -2,10 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tudespensa/constants.dart';
+import 'package:tudespensa/provider/calories_provider.dart';
+import 'package:tudespensa/provider/photo_provider.dart';
 import 'package:tudespensa/provider/profile_provider.dart';
 
-class UserProfileCard extends StatelessWidget {
+class UserProfileCard extends StatefulWidget {
   const UserProfileCard({super.key});
+
+  @override
+  State<UserProfileCard> createState() => _UserProfileCardState();
+}
+
+class _UserProfileCardState extends State<UserProfileCard> {
+  @override
+  void initState() {
+    super.initState();
+    // Cargar la foto del usuario al inicio
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final photoProvider = context.read<PhotoProvider>();
+      final profileProvider = context.read<ProfileProvider>();
+      if (profileProvider.userModel?.profilePhoto != null) {
+        photoProvider.currentPhotoUrl = '${photoProvider.baseUrl}/${profileProvider.userModel!.profilePhoto}';
+        print('[UserProfileCard] URL de la foto: ${photoProvider.currentPhotoUrl}');
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +44,41 @@ class UserProfileCard extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const CircleAvatar(
-                radius: 30,
-                backgroundImage: AssetImage('assets/images/icon.png'),
+              GestureDetector(
+                onTap: () => _showPhotoOptions(context),
+                child: Stack(
+                  children: [
+                    Consumer<PhotoProvider>(
+                      builder: (context, photoProvider, child) {
+                        return CircleAvatar(
+                          radius: 30,
+                          backgroundImage: photoProvider.currentPhotoUrl != null
+                              ? NetworkImage(photoProvider.currentPhotoUrl!)
+                              : const AssetImage('assets/images/icon.png') as ImageProvider,
+                          child: photoProvider.isLoading
+                              ? const CircularProgressIndicator()
+                              : null,
+                        );
+                      },
+                    ),
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(
+                          Icons.camera_alt,
+                          size: 15,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(width: 5),
               Expanded(
@@ -59,13 +112,14 @@ class UserProfileCard extends StatelessWidget {
                                   color: Colors.black,
                                 ),
                                 const SizedBox(width: 4),
-                                Consumer<ProfileProvider>(
-                                  builder: (context, profileProvider, child) {
-                                    if (profileProvider.isLoading) {
+                                Consumer<CaloriesProvider>(
+                                  builder: (context, caloriesProvider, child) {
+                                    if (caloriesProvider.isLoading) {
                                       return const Text('...');
                                     } else {
+                                      final edad = caloriesProvider.caloriesModel?.data.informacionUsuario.edad ?? 0;
                                       return Text(
-                                        '${profileProvider.userModel?.edad ?? ""}',
+                                        '$edad años',
                                         style: const TextStyle(fontSize: 13),
                                       );
                                     }
@@ -108,7 +162,19 @@ class UserProfileCard extends StatelessWidget {
                             const SizedBox(height: 20),
                             Row(
                               children: [
-                                const Text("1,588"),
+                                Consumer<CaloriesProvider>(
+                                  builder: (context, caloriesProvider, child) {
+                                    if (caloriesProvider.isLoading) {
+                                      return const Text('...');
+                                    } else {
+                                      final calorias = caloriesProvider.caloriesModel?.data.caloriasDiarias ?? 0;
+                                      return Text(
+                                        '$calorias',
+                                        style: const TextStyle(fontSize: 13),
+                                      );
+                                    }
+                                  },
+                                ),
                                 const SizedBox(width: 4),
                                 SvgPicture.asset(
                                   'assets/icons/cubiertos.svg',
@@ -128,6 +194,56 @@ class UserProfileCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  void _showPhotoOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Cambiar foto'),
+                onTap: () {
+                  Navigator.pop(context);
+                  context.read<PhotoProvider>().pickAndUploadImage(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.delete),
+                title: const Text('Eliminar foto'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final photoProvider = context.read<PhotoProvider>();
+                  final success = await photoProvider.deleteProfilePhoto();
+                  if (context.mounted) {
+                    if (success) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Foto eliminada exitosamente'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(photoProvider.errorMessage ?? 'Error al eliminar la foto'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

@@ -6,10 +6,15 @@ import 'package:tudespensa/Utils/preferences.dart';
 import 'package:tudespensa/constants.dart';
 import 'package:tudespensa/pages/wellcome_page.dart';
 import 'package:tudespensa/provider/auth_provider.dart';
+import 'package:tudespensa/provider/calories_provider.dart';
 import 'package:tudespensa/provider/gender_provider.dart';
 import 'package:tudespensa/provider/goal_provider.dart';
 import 'package:tudespensa/provider/information_provider.dart';
+import 'package:tudespensa/provider/ingredient_provider.dart';
+import 'package:tudespensa/provider/photo_provider.dart';
 import 'package:tudespensa/provider/profile_provider.dart';
+import 'package:tudespensa/provider/shopping_list_provider.dart';
+import 'package:tudespensa/provider/type_diet_provider.dart';
 //import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
@@ -30,6 +35,11 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => GoalProvider()),
         ChangeNotifierProvider(create: (_) => InformationProvider()),
         ChangeNotifierProvider(create: (_) => GenderProvider()),
+        ChangeNotifierProvider(create: (_) => TypeDietProvider()),
+        ChangeNotifierProvider(create: (_) => ShoppingListProvider()),
+        ChangeNotifierProvider(create: (context) => IngredientProvider()),
+        ChangeNotifierProvider(create: (_) => CaloriesProvider()),
+        ChangeNotifierProvider(create: (_) => PhotoProvider()),
       ],
       child: ScreenUtilInit(
         designSize: Size(390, 844), // Tamaño base (como iPhone 13)
