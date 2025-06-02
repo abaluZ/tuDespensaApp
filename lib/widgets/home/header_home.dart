@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tudespensa/pages/user_page.dart';
 import 'package:tudespensa/provider/profile_provider.dart';
+import 'package:tudespensa/provider/calories_provider.dart';
 
 class HeaderHome extends StatelessWidget {
   const HeaderHome({super.key});
@@ -37,16 +38,21 @@ class HeaderHome extends StatelessWidget {
                     child: InkWell(
                       splashColor: Colors.yellow.shade100,
                       onTap: () async {
-                        print('[HeaderHome] Icono tocado');
+                        print('[HeaderHome] Iniciando carga de datos...');
                         final profileProvider = context.read<ProfileProvider>();
+                        final caloriesProvider = context.read<CaloriesProvider>();
 
-                        final response =
-                            await profileProvider.fetchUserProfile();
-                        print('[HeaderHome] Llamando a fetchUserProfile...');
+                        print('[HeaderHome] Cargando perfil y calorías en paralelo...');
+                        final futures = await Future.wait([
+                          profileProvider.fetchUserProfile(),
+                          caloriesProvider.fetchCaloriesData(),
+                        ]);
 
-                        if (response != null) {
-                          print(
-                              '[HeaderHome] Perfil cargado exitosamente. Navegando a UserPage.');
+                        final userProfile = futures[0];
+                        final caloriesData = futures[1];
+
+                        if (userProfile != null && caloriesData != null) {
+                          print('[HeaderHome] ✅ Perfil y calorías cargados exitosamente');
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -54,10 +60,12 @@ class HeaderHome extends StatelessWidget {
                             ),
                           );
                         } else {
-                          print('[HeaderHome] Error al cargar el perfil');
+                          print('[HeaderHome] ❌ Error en la carga de datos');
+                          if (userProfile == null) print('[HeaderHome] - Error en perfil');
+                          if (caloriesData == null) print('[HeaderHome] - Error en calorías');
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text("Error al cargar el perfil"),
+                              content: Text("Error al cargar los datos del usuario"),
                               backgroundColor: Colors.red,
                             ),
                           );

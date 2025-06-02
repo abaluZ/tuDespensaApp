@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tudespensa/constants.dart';
 import 'package:tudespensa/pages/despensa_page.dart';
+import 'package:tudespensa/pages/goalPageV.dart';
 import 'package:tudespensa/pages/recipes_recommended.dart';
 import 'package:tudespensa/provider/profile_provider.dart';
 import 'package:tudespensa/widgets/home/header_home.dart';
 import 'package:tudespensa/widgets/home/image_button.dart';
 import 'package:tudespensa/widgets/navbar/navigation_navbar.dart';
 import 'package:tudespensa/widgets/home/recommended_recipes_button.dart';
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -69,7 +69,12 @@ class _HomePageState extends State<HomePage> {
                 ImageButton(
                   imagePath: 'assets/images/objetivoButton.png',
                   label: 'Objetivo',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Goalpagev()),
+                  );
+                  },
                 ),
                 const SizedBox(width: 15),
                 ImageButton(
