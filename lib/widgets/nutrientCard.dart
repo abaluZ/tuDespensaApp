@@ -28,7 +28,6 @@ class TarjetaNutrientes extends StatelessWidget {
         }
 
         final userModel = profileProvider.userModel;
-        final calories = userModel?.calories ?? 0;
 
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -54,7 +53,7 @@ class TarjetaNutrientes extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _formatoLinea('Calorías', '$calories Kcal'),
+                        _formatoLinea('Calorías', '2332 Kcal'),
                         style: const TextStyle(fontSize: 16),
                       ),
                       const SizedBox(height: 8),
