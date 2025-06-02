@@ -6,6 +6,7 @@ import 'package:tudespensa/Utils/preferences.dart';
 import 'package:tudespensa/constants.dart';
 import 'package:tudespensa/pages/wellcome_page.dart';
 import 'package:tudespensa/provider/auth_provider.dart';
+import 'package:tudespensa/provider/despensa_user_provider.dart';
 import 'package:tudespensa/provider/gender_provider.dart';
 import 'package:tudespensa/provider/goal_provider.dart';
 import 'package:tudespensa/provider/information_provider.dart';
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => TypeDietProvider()),
         ChangeNotifierProvider(create: (_) => ShoppingListProvider()),
         ChangeNotifierProvider(create: (context) => IngredientProvider()),
+        ChangeNotifierProvider(create: (context) => DespensaUserProvider()),
       ],
       child: ScreenUtilInit(
         designSize: Size(390, 844), // Tamaño base (como iPhone 13)
