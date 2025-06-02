@@ -16,6 +16,36 @@ class TarjetaNutrientes extends StatelessWidget {
     return '$titulo$puntos$valor';
   }
 
+  Widget _buildPremiumOverlay() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.lock,
+              color: Colors.white,
+              size: 40,
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Premium',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final caloriesProvider = context.watch<CaloriesProvider>();
@@ -42,6 +72,7 @@ class TarjetaNutrientes extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
                 'Diario',
@@ -82,38 +113,58 @@ class TarjetaNutrientes extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          Card(
-            color: Colors.orange.shade50,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _formatoLinea('Calorías', '$calorias Kcal'),
-                    style: const TextStyle(fontSize: 16),
+          Stack(
+            children: [
+              Card(
+                color: Colors.orange.shade50,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _formatoLinea('Calorías', '$calorias Kcal'),
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: isPremium ? Colors.black : Colors.black45,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _formatoLinea('Carbohidratos', '$carbohidratos g'),
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: isPremium ? Colors.black : Colors.black45,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _formatoLinea('Proteínas', '$proteinas g'),
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: isPremium ? Colors.black : Colors.black45,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _formatoLinea('Grasas', '$grasas g'),
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: isPremium ? Colors.black : Colors.black45,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _formatoLinea('Carbohidratos', '$carbohidratos g'),
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _formatoLinea('Proteínas', '$proteinas g'),
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _formatoLinea('Grasas', '$grasas g'),
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ],
+                ),
               ),
-            ),
+              if (!isPremium)
+                Positioned.fill(
+                  child: _buildPremiumOverlay(),
+                ),
+            ],
           ),
           if (isPremium) ...[
             const SizedBox(height: 16),
