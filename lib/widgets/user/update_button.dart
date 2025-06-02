@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tudespensa/constants.dart';
+import 'package:tudespensa/pages/specific_diet.dart';
 import 'package:tudespensa/pages/update_goal.dart';
 import 'package:tudespensa/pages/update_information.dart';
 
@@ -54,7 +55,7 @@ void mostrarOpcionesEditar(BuildContext context) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => UpdateGoalPage(),
+                          builder: (context) => SpecificDiet(),
                         ),
                       );
                     },

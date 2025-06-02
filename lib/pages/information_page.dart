@@ -144,13 +144,6 @@ class _InformationPageState extends State<InformationPage> {
                         ),
                       ],
                     ),
-                    /* InformationInput(
-                      controller: generoController,
-                      keyboardType: TextInputType.text,
-                      label: "Género",
-                      hintText: "Masculino/Femenino",
-                      validator: genderValidator,
-                    ), */
                   ],
                 ),
               ),

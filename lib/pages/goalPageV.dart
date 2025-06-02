@@ -3,7 +3,7 @@ import 'package:tudespensa/constants.dart';
 import 'package:tudespensa/pages/user_page.dart';
 import 'package:tudespensa/widgets/information/banner_page.dart';
 import 'package:tudespensa/widgets/appBarV.dart';
-import 'package:tudespensa/widgets/goalSelection.dart';
+import 'package:tudespensa/widgets/information/goalSelection.dart';
 import 'package:tudespensa/widgets/nutrientCard.dart';
 
 class Goalpagev extends StatelessWidget {
@@ -32,9 +32,10 @@ class Goalpagev extends StatelessWidget {
         children: [
           SizedBox(height: 20),
           EncabezadoConImagen(
-              texto: 'Objetivo',
-              rutaImagen: 'assets/images/despensaPage.png',
-              colorTexto: Colors.black),
+            texto: 'Objetivo',
+            rutaImagen: 'assets/images/despensaPage.png',
+            colorTexto: Colors.black,
+          ),
           SizedBox(height: 20),
           ObjetivoUsuario(
             onEditar: () {
