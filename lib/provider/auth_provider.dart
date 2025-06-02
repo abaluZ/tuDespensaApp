@@ -8,7 +8,7 @@ import 'package:tudespensa/Utils/preferences.dart';
 class AuthProvider extends ChangeNotifier {
   final prefs = Preferences();
   final String baseUrl =
-      'http://192.168.1.5:4000/api'; // cambia esto según el entorno
+      'http://172.174.2.236:4000/api'; // cambia esto según el entorno
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;

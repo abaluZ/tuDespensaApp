@@ -12,7 +12,7 @@ class CaloriesProvider with ChangeNotifier {
   String? errorMessage;
 
   // URL base del backend
-  final String baseUrl = 'http://192.168.1.5:4000/api';
+  final String baseUrl = 'http://172.174.2.236:4000/api';
 
   Future<CaloriesModel?> fetchCaloriesData() async {
     print('[CaloriesProvider] Iniciando carga de datos de calorías...');
