@@ -85,7 +85,7 @@ class RegisterVerifyPage extends StatelessWidget {
                       height: 50.h,
                       child: AuthInput(
                         controller: passwordController,
-                        keyboardType: TextInputType.number,
+                        keyboardType: TextInputType.text,
                         label: "Contraseña",
                         validator: passwordValidator,
                         obscureText: true,
