@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 class InformationProvider extends ChangeNotifier {
   final String baseUrl =
-      'http://192.168.0.12:4000/api'; // Ajusta según tu URL de backend
+      'http://192.168.1.5:4000/api'; // Ajusta según tu URL de backend
 
   String? _nombre;
   String? _apellidos;
