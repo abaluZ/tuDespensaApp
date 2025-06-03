@@ -6,6 +6,7 @@ class RecipeCard extends StatelessWidget {
   final int calories;
   final int duration;
   final String difficulty;
+  final VoidCallback onTap; // Agregar el parámetro onTap
 
   const RecipeCard({
     super.key,
@@ -14,6 +15,7 @@ class RecipeCard extends StatelessWidget {
     required this.calories,
     required this.duration,
     required this.difficulty,
+    required this.onTap, // Agregar el parámetro onTap
   });
 
   @override
@@ -73,9 +75,7 @@ class RecipeCard extends StatelessWidget {
                   Row(
                     children: [
                       TextButton(
-                        onPressed: () {
-                          // Acción de ver receta
-                        },
+                        onPressed: onTap, // Usar el parámetro onTap
                         child: const Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
