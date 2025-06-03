@@ -28,7 +28,7 @@ class ProfileProvider with ChangeNotifier {
       }
 
       final response = await http.get(
-        Uri.parse('http://192.168.1.5:4000/api/profileApp'),
+        Uri.parse('http://172.174.2.236:4000/api/profileApp'),
         headers: {
           'Authorization': 'Bearer $token',
         },
