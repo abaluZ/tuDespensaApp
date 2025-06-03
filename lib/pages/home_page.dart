@@ -10,6 +10,7 @@ import 'package:tudespensa/widgets/home/header_home.dart';
 import 'package:tudespensa/widgets/home/image_button.dart';
 import 'package:tudespensa/widgets/navbar/navigation_navbar.dart';
 import 'package:tudespensa/widgets/home/recommended_recipes_button.dart';
+import 'package:tudespensa/provider/calories_provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -137,12 +138,16 @@ class _HomePageState extends State<HomePage> {
                 ImageButton(
                   imagePath: 'assets/images/objetivoButton.png',
                   label: 'Objetivo',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const Goalpagev()),
-                    );
+                  onTap: () async {
+                    final caloriesProvider = context.read<CaloriesProvider>();
+                    await caloriesProvider.fetchCaloriesData();
+                    if (context.mounted) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Goalpagev()),
+                      );
+                    }
                   },
                 ),
                 const SizedBox(width: 15),
