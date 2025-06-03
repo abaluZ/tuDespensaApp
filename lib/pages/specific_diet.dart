@@ -10,7 +10,7 @@ class SpecificDiet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //final goalProvider = Provider.of<GoalProvider>(context);
+    final typeDietProvider = context.watch<TypeDietProvider>();
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -46,61 +46,30 @@ class SpecificDiet extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 DietButton(
-                  title: 'Clásica',
+                  title: 'Estándar',
                   icon: Icons.restaurant,
                   color: Colors.green,
                   textColor: Colors.white,
-                  value: DietType.clasica,
+                  value: DietType.estandar,
                   onTap: () {
-                    context
-                        .read<TypeDietProvider>()
-                        .changeDiet(DietType.clasica);
-                  },
-                ),
-                SizedBox(height: 20),
-                DietButton(
-                  title: 'Pescariana',
-                  icon: Icons.restaurant,
-                  color: Colors.green,
-                  textColor: Colors.white,
-                  value: DietType.clasica,
-                  onTap: () {
-                    context
-                        .read<TypeDietProvider>()
-                        .changeDiet(DietType.pescariana);
+                    context.read<TypeDietProvider>().changeDiet(DietType.estandar);
                   },
                 ),
                 SizedBox(height: 20),
                 DietButton(
                   title: 'Vegetariana',
-                  icon: Icons.restaurant,
+                  icon: Icons.eco,
                   color: Colors.green,
                   textColor: Colors.white,
-                  value: DietType.clasica,
+                  value: DietType.vegetariana,
                   onTap: () {
-                    context
-                        .read<TypeDietProvider>()
-                        .changeDiet(DietType.vegetariana);
-                  },
-                ),
-                SizedBox(height: 20),
-                DietButton(
-                  title: 'Vegana',
-                  icon: Icons.restaurant,
-                  color: Colors.green,
-                  textColor: Colors.white,
-                  value: DietType.clasica,
-                  onTap: () {
-                    context
-                        .read<TypeDietProvider>()
-                        .changeDiet(DietType.vegana);
+                    context.read<TypeDietProvider>().changeDiet(DietType.vegetariana);
                   },
                 ),
               ],
             ),
-
             SizedBox(height: 30),
-            // Widget para el botón de continuar
+            // Widget para el logo
             LogoEmpresa(),
             SizedBox(height: 10),
           ],

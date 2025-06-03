@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 
 enum DietType {
-  clasica,
-  pescariana,
+  estandar,
   vegetariana,
-  vegana,
 }
 
 class TypeDietProvider extends ChangeNotifier {
@@ -19,14 +17,10 @@ class TypeDietProvider extends ChangeNotifier {
   String? get dietAsText {
     if (_selectedDiet == null) return null;
     switch (_selectedDiet!) {
-      case DietType.clasica:
-        return 'Clásica';
-      case DietType.pescariana:
-        return 'Pescariana';
+      case DietType.estandar:
+        return 'Estándar';
       case DietType.vegetariana:
         return 'Vegetariana';
-      case DietType.vegana:
-        return 'Vegana';
     }
   }
 }
