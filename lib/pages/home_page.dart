@@ -82,10 +82,8 @@ class _HomePageState extends State<HomePage> {
                   print(
                       'Cena: ${caloriesProvider.caloriesModel!.data.distribucionCalorica.cena} kcal');
 
-                  return Text(
-                    'Calorías cargadas exitosamente',
-                    style: TextStyle(color: Colors.green),
-                  );
+                  // Ya no mostrar mensaje de éxito
+                  return const SizedBox.shrink();
                 } else {
                   return const Text('No hay datos de calorías disponibles');
                 }
