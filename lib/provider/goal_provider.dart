@@ -8,7 +8,6 @@ class GoalProvider extends ChangeNotifier {
   final String baseUrl =
       'http://192.168.1.5:4000/api'; // ajusta si usas IP local o deploy
 
-
   String? _selectedGoal;
   bool _isLoading = false;
 

@@ -54,11 +54,11 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: NavigationNavbar(),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 30),
-        child: Stack(
-          children: [
-            Column(
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(vertical: 30),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // Header
@@ -93,15 +93,12 @@ class _HomePageState extends State<HomePage> {
                         style: TextStyle(color: Colors.red),
                       );
                     } else if (caloriesProvider.caloriesModel != null) {
-                      // Imprime la información relevante en la consola
                       print(
                           'Desayuno: ${caloriesProvider.caloriesModel!.data.distribucionCalorica.desayuno} kcal');
                       print(
                           'Almuerzo: ${caloriesProvider.caloriesModel!.data.distribucionCalorica.almuerzo} kcal');
                       print(
                           'Cena: ${caloriesProvider.caloriesModel!.data.distribucionCalorica.cena} kcal');
-
-                      // Ya no mostrar mensaje de éxito
                       return const SizedBox.shrink();
                     } else {
                       return const Text('No hay datos de calorías disponibles');
@@ -182,7 +179,8 @@ class _HomePageState extends State<HomePage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const Goalpagev()),
+                              builder: (context) => const Goalpagev(),
+                            ),
                           );
                         }
                       },
@@ -192,10 +190,10 @@ class _HomePageState extends State<HomePage> {
                       imagePath: 'assets/images/recetasButton.png',
                       label: 'Recetas IA',
                       onTap: () {
-                        print('Navegando a Recetas IA');
-                        Navigator.of(context).push(
+                        Navigator.push(
+                          context,
                           MaterialPageRoute(
-                            builder: (_) => const AIRecipesPage(),
+                            builder: (context) => const AIRecipesPage(),
                           ),
                         );
                       },
@@ -216,7 +214,8 @@ class _HomePageState extends State<HomePage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const DespensaPage()),
+                            builder: (context) => const DespensaPage(),
+                          ),
                         );
                       },
                     ),
@@ -228,19 +227,21 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
+
+                const SizedBox(height: 15),
               ],
             ),
-            if (_isLoading)
-              Container(
-                color: Colors.black.withOpacity(0.3),
-                child: const Center(
-                  child: CircularProgressIndicator(),
-                ),
+          ),
+          if (_isLoading)
+            Container(
+              width: double.infinity,
+              height: double.infinity,
+              color: Colors.black.withOpacity(0.3),
+              child: const Center(
+                child: CircularProgressIndicator(),
               ),
-
-            const SizedBox(height: 15),
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }

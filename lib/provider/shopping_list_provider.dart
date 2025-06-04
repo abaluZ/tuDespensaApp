@@ -9,11 +9,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:intl/intl.dart';
 import 'auth_provider.dart';
+import 'reports_provider.dart';
 
 class ShoppingListProvider extends ChangeNotifier {
-  final String baseUrl =
-      'http://192.168.1.5:4000/api'; // ajusta si usas IP local o deploy
-
+  final String baseUrl = 'http://192.168.1.5:4000/api';
 
   List<ShoppingItem> _shoppingItems = [];
   List<ShoppingListHistory> _historyItems = [];
@@ -45,7 +44,7 @@ class ShoppingListProvider extends ChangeNotifier {
       }
 
       final res = await http.post(
-        Uri.parse('$baseUrl/shopping-list'),
+        Uri.parse('$baseUrl/shopping/list'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -62,7 +61,7 @@ class ShoppingListProvider extends ChangeNotifier {
         print(
             "Lista de compras ${completar ? 'completada' : 'guardada/actualizada'} correctamente");
         if (completar) {
-          _shoppingItems = []; // Limpiar la lista actual si se completó
+          _shoppingItems = [];
           notifyListeners();
         }
         return true;
@@ -90,7 +89,7 @@ class ShoppingListProvider extends ChangeNotifier {
       }
 
       final res = await http.get(
-        Uri.parse('$baseUrl/shopping-list'),
+        Uri.parse('$baseUrl/shopping/list'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -122,50 +121,31 @@ class ShoppingListProvider extends ChangeNotifier {
       {int page = 1, int limit = 10}) async {
     try {
       _setLoading(true);
-      final token =
-          await Provider.of<AuthProvider>(context, listen: false).getToken();
-
-      if (token == null) {
-        print("Token no encontrado");
-        _setLoading(false);
-        return false;
-      }
-
-      final res = await http.get(
-        Uri.parse('$baseUrl/shopping-list/history?page=$page&limit=$limit'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
+      
+      final reportsProvider = Provider.of<ReportsProvider>(context, listen: false);
+      final historyData = await reportsProvider.getShoppingHistory(
+        page: page,
+        limit: limit,
       );
 
-      if (res.statusCode == 200) {
-        final data = jsonDecode(res.body);
-        print("Respuesta del servidor: ${res.body}"); // Debug log
-
-        if (data['historial'] == null) {
-          print("El historial es nulo en la respuesta");
-          _setLoading(false);
-          return false;
-        }
-
+      if (historyData != null) {
         if (page == 1) {
           _historyItems = [];
         }
 
-        final newItems = (data['historial'] as List)
+        final newItems = historyData
             .map((item) => ShoppingListHistory.fromMap(item))
             .toList();
 
         _historyItems.addAll(newItems);
-        _currentPage = data['currentPage'] ?? page;
-        _totalPages = data['totalPages'] ?? 1;
+        _currentPage = page;
+        _totalPages = (historyData.length / limit).ceil();
 
         _setLoading(false);
         notifyListeners();
         return true;
       } else {
-        print("Error al obtener el historial: ${res.body}");
+        print("Error al obtener el historial: ${reportsProvider.errorMessage}");
         _setLoading(false);
         return false;
       }
@@ -215,38 +195,19 @@ class ShoppingListProvider extends ChangeNotifier {
         );
       }
 
-      final token =
-          await Provider.of<AuthProvider>(context, listen: false).getToken();
-
-      if (token == null) {
-        print("Token no encontrado");
-        return;
-      }
-
-      final queryParams = {
-        'startDate': startDate.toIso8601String().split('T')[0],
-        'endDate': endDate.toIso8601String().split('T')[0],
-        'limit': limit.toString(),
-      };
-
-      final uri = Uri.parse('$baseUrl/reports/shopping/most-bought')
-          .replace(queryParameters: queryParams);
-
-      final res = await http.get(
-        uri,
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Accept': 'application/octet-stream',
-        },
+      final reportsProvider = Provider.of<ReportsProvider>(context, listen: false);
+      final reportData = await reportsProvider.getMostBoughtReport(
+        startDate: startDate,
+        endDate: endDate,
+        limit: limit,
       );
 
-      if (res.statusCode == 200) {
-        final data = jsonDecode(res.body);
+      if (reportData != null) {
         if (context.mounted) {
-          _showReportDialog(context, data, startDate, endDate);
+          _showReportDialog(context, reportData, startDate, endDate);
         }
       } else {
-        print("Error al obtener el reporte: ${res.body}");
+        print("Error al obtener el reporte: ${reportsProvider.errorMessage}");
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -262,125 +223,6 @@ class ShoppingListProvider extends ChangeNotifier {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Error al generar el reporte'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
-
-  Future<void> _downloadAndOpenPDF(
-      BuildContext context, DateTime startDate, DateTime endDate) async {
-    try {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Generando reporte PDF...'),
-            backgroundColor: Colors.blue,
-          ),
-        );
-      }
-
-      final token =
-          await Provider.of<AuthProvider>(context, listen: false).getToken();
-      if (token == null) return;
-
-      final queryParams = {
-        'startDate': startDate.toIso8601String().split('T')[0],
-        'endDate': endDate.toIso8601String().split('T')[0],
-      };
-
-      final uri = Uri.parse('$baseUrl/reports/shopping/history/report')
-          .replace(queryParameters: queryParams);
-
-      print('Intentando descargar PDF desde: $uri');
-
-      final res = await http.get(
-        uri,
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Accept': 'application/pdf',
-        },
-      );
-
-      print('Respuesta del servidor:');
-      print('Status code: ${res.statusCode}');
-      print('Headers: ${res.headers}');
-      print('Content-Type: ${res.headers['content-type']}');
-
-      if (res.statusCode == 200) {
-        // Verificar si recibimos datos binarios
-        if (res.headers['content-type']?.contains('application/pdf') == true ||
-            res.headers['content-type']?.contains('application/octet-stream') ==
-                true ||
-            res.headers['content-disposition']?.contains('attachment') ==
-                true) {
-          final directory = await getApplicationDocumentsDirectory();
-          final dateStr = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-          final fileName = 'reporte_productos_$dateStr.pdf';
-          final filePath = '${directory.path}/$fileName';
-
-          print('Guardando PDF en: $filePath');
-          print('Tamaño del archivo: ${res.bodyBytes.length} bytes');
-
-          final file = File(filePath);
-          await file.writeAsBytes(res.bodyBytes);
-
-          print('PDF guardado, intentando abrir...');
-
-          if (context.mounted) {
-            final result = await OpenFile.open(filePath);
-            print(
-                'Resultado de abrir archivo: ${result.type} - ${result.message}');
-
-            if (result.type == ResultType.done) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Reporte PDF generado con éxito'),
-                  backgroundColor: Colors.green,
-                ),
-              );
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Error al abrir el archivo: ${result.message}'),
-                  backgroundColor: Colors.red,
-                ),
-              );
-            }
-          }
-        } else {
-          // Si recibimos JSON en lugar de PDF, probablemente sea un mensaje de error
-          final errorData = jsonDecode(res.body);
-          throw Exception(
-              errorData['message'] ?? 'Error desconocido al generar el PDF');
-        }
-      } else {
-        print('Error: El servidor no devolvió un PDF válido');
-        print('Content-Type recibido: ${res.headers['content-type']}');
-
-        if (context.mounted) {
-          String errorMessage = 'Error al descargar el PDF\n';
-          if (res.headers['content-type']?.contains('application/json') ==
-              true) {
-            final errorData = jsonDecode(res.body);
-            errorMessage += errorData['message'] ?? 'Error desconocido';
-          }
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMessage),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      print("Error detallado al descargar PDF: $e");
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error al descargar el PDF: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -458,18 +300,160 @@ class ShoppingListProvider extends ChangeNotifier {
             onPressed: () => Navigator.pop(context),
             child: const Text('Cerrar'),
           ),
-          TextButton.icon(
-            onPressed: () {
-              _downloadAndOpenPDF(context, startDate, endDate);
-            },
-            icon: const Icon(Icons.picture_as_pdf),
-            label: const Text('Descargar PDF'),
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.green,
-            ),
-          ),
         ],
       ),
     );
+  }
+
+  void showMostBoughtReport(BuildContext context) async {
+    final reportsProvider = Provider.of<ReportsProvider>(context, listen: false);
+    final now = DateTime.now();
+    final startDate = now.subtract(const Duration(days: 7));
+    final endDate = now;
+
+    final report = await reportsProvider.getMostBoughtReport(
+      startDate: startDate,
+      endDate: endDate,
+    );
+
+    if (report != null) {
+      // ignore: use_build_context_synchronously
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Reporte de Productos Más Comprados'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Período: ${DateFormat('dd/MM/yyyy').format(startDate)} - ${DateFormat('dd/MM/yyyy').format(endDate)}'),
+              const SizedBox(height: 8),
+              Text('Total de Listas: ${report['totalLists'] ?? 0}'),
+              Text('Total de Productos Únicos: ${report['uniqueProducts'] ?? 0}'),
+              const SizedBox(height: 16),
+              const Text('Productos más comprados:'),
+              const SizedBox(height: 8),
+              ...List.generate(
+                (report['products'] as List? ?? []).length,
+                (index) {
+                  final product = (report['products'] as List)[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(product['name'] ?? ''),
+                        Text('${product['count'] ?? 0}'),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                final filePath = await reportsProvider.downloadMostBoughtReportPDF(
+                  startDate: startDate,
+                  endDate: endDate,
+                );
+                
+                if (filePath != null) {
+                  // ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Reporte guardado en: $filePath'),
+                      duration: const Duration(seconds: 5),
+                    ),
+                  );
+                  await OpenFile.open(filePath);
+                } else {
+                  // ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Error al descargar el reporte PDF'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+              child: const Text('Descargar PDF'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cerrar'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error al generar el reporte'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<String?> downloadMostBoughtReportPDF(
+    BuildContext context, {
+    required DateTime startDate,
+    required DateTime endDate,
+    int limit = 10,
+  }) async {
+    try {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Descargando reporte PDF...'),
+            backgroundColor: Colors.blue,
+          ),
+        );
+      }
+
+      final reportsProvider = Provider.of<ReportsProvider>(context, listen: false);
+      final filePath = await reportsProvider.downloadMostBoughtReportPDF(
+        startDate: startDate,
+        endDate: endDate,
+        limit: limit,
+      );
+
+      if (filePath != null) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Reporte PDF descargado correctamente'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+        return filePath;
+      } else {
+        print("Error al descargar el reporte PDF: ${reportsProvider.errorMessage}");
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Error al descargar el reporte PDF'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return null;
+      }
+    } catch (e) {
+      print("Error en downloadMostBoughtReportPDF: $e");
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error al descargar el reporte PDF'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return null;
+    }
   }
 }

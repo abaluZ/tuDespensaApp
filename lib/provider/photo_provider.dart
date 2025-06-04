@@ -17,7 +17,6 @@ class PhotoProvider with ChangeNotifier {
   // URL base del backend
   final String baseUrl = 'http://192.168.1.5:4000/api';
 
-
   // Método para construir URLs
   String _buildUrl(String endpoint) {
     final url = '$baseUrl$endpoint';
@@ -50,6 +49,8 @@ class PhotoProvider with ChangeNotifier {
 
       print(
           '[PhotoProvider] Preparando archivo para subir: ${profilePhoto.path}');
+      print(
+          '[PhotoProvider] Preparando archivo para subir: ${profilePhoto.path}');
       final fileStats = await profilePhoto.stat();
       print('[PhotoProvider] Tamaño del archivo: ${fileStats.size} bytes');
 
@@ -75,6 +76,8 @@ class PhotoProvider with ChangeNotifier {
         contentType: mediaType,
       );
 
+      print(
+          '[PhotoProvider] Tipo de contenido del archivo: ${multipartFile.contentType}');
       print(
           '[PhotoProvider] Tipo de contenido del archivo: ${multipartFile.contentType}');
       request.files.add(multipartFile);
@@ -194,6 +197,7 @@ class PhotoProvider with ChangeNotifier {
         final File imageFile = File(pickedImage.path);
         final result = await uploadProfilePhoto(imageFile);
 
+
         if (result) {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -227,3 +231,5 @@ class PhotoProvider with ChangeNotifier {
     }
   }
 }
+
+
