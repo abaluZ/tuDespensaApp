@@ -14,6 +14,7 @@ import 'package:tudespensa/provider/information_provider.dart';
 import 'package:tudespensa/provider/ingredient_provider.dart';
 import 'package:tudespensa/provider/photo_provider.dart';
 import 'package:tudespensa/provider/profile_provider.dart';
+import 'package:tudespensa/provider/reports_provider.dart';
 import 'package:tudespensa/provider/shopping_list_provider.dart';
 import 'package:tudespensa/provider/type_diet_provider.dart';
 //import 'package:flutter_localizations/flutter_localizations.dart';
@@ -42,6 +43,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => DespensaUserProvider()),
         ChangeNotifierProvider(create: (_) => CaloriesProvider()),
         ChangeNotifierProvider(create: (_) => PhotoProvider()),
+        ChangeNotifierProvider(create: (_) => ReportsProvider()),
       ],
       child: ScreenUtilInit(
         designSize: Size(390, 844), // Tamaño base (como iPhone 13)

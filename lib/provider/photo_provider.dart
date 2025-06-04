@@ -15,7 +15,7 @@ class PhotoProvider with ChangeNotifier {
   final ImagePicker _picker = ImagePicker();
 
   // URL base del backend
-  final String baseUrl = 'http://172.174.2.236:4000/api';
+  final String baseUrl = 'http://192.168.0.12:4000/api';
 
   // Método para construir URLs
   String _buildUrl(String endpoint) {
@@ -47,7 +47,8 @@ class PhotoProvider with ChangeNotifier {
         'Authorization': 'Bearer $token',
       });
 
-      print('[PhotoProvider] Preparando archivo para subir: ${profilePhoto.path}');
+      print(
+          '[PhotoProvider] Preparando archivo para subir: ${profilePhoto.path}');
       final fileStats = await profilePhoto.stat();
       print('[PhotoProvider] Tamaño del archivo: ${fileStats.size} bytes');
 
@@ -73,7 +74,8 @@ class PhotoProvider with ChangeNotifier {
         contentType: mediaType,
       );
 
-      print('[PhotoProvider] Tipo de contenido del archivo: ${multipartFile.contentType}');
+      print(
+          '[PhotoProvider] Tipo de contenido del archivo: ${multipartFile.contentType}');
       request.files.add(multipartFile);
 
       print('[PhotoProvider] Enviando foto al servidor...');
@@ -179,7 +181,8 @@ class PhotoProvider with ChangeNotifier {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Por favor selecciona una imagen en formato JPG, PNG, GIF o WebP'),
+                content: Text(
+                    'Por favor selecciona una imagen en formato JPG, PNG, GIF o WebP'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -189,7 +192,7 @@ class PhotoProvider with ChangeNotifier {
 
         final File imageFile = File(pickedImage.path);
         final result = await uploadProfilePhoto(imageFile);
-        
+
         if (result) {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -222,4 +225,4 @@ class PhotoProvider with ChangeNotifier {
       }
     }
   }
-} 
+}

@@ -77,7 +77,8 @@ class _HomePageState extends State<HomePage> {
                     if (context.mounted) {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const Goalpagev()),
+                        MaterialPageRoute(
+                            builder: (context) => const Goalpagev()),
                       );
                     }
                   },
@@ -117,6 +118,8 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
             ),
+
+            const SizedBox(height: 15),
           ],
         ),
       ),
