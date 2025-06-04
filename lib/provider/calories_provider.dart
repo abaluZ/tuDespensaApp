@@ -21,6 +21,7 @@ class CaloriesProvider with ChangeNotifier {
   // URL base del backend
   final String baseUrl = 'http://192.168.1.5:4000/api';
 
+
   Future<CaloriesModel?> fetchCaloriesData() async {
     if (_isLoading) return _caloriesModel;
     
@@ -56,6 +57,45 @@ class CaloriesProvider with ChangeNotifier {
         _caloriesModel = CaloriesModel.fromJson(decodedBody);
         _errorMessage = null;
         print('[CaloriesProvider] Datos cargados exitosamente');
+        try {
+          final decodedBody = json.decode(response.body);
+          print('[CaloriesProvider] Respuesta decodificada:');
+          print(const JsonEncoder.withIndent('  ').convert(decodedBody));
+
+          caloriesModel = CaloriesModel.fromJson(decodedBody);
+          print('[CaloriesProvider] Modelo creado exitosamente');
+          print('[CaloriesProvider] Datos cargados:');
+          print('- Mensaje: ${caloriesModel?.message}');
+          print('- Calorías diarias: ${caloriesModel?.data.caloriasDiarias}');
+          print('- TMB: ${caloriesModel?.data.tmb}');
+          print('\nMacronutrientes:');
+          print(
+              '- Proteínas: ${caloriesModel?.data.macronutrientes.proteinas}g');
+          print('- Grasas: ${caloriesModel?.data.macronutrientes.grasas}g');
+          print(
+              '- Carbohidratos: ${caloriesModel?.data.macronutrientes.carbohidratos}g');
+          print('\nDistribución calórica:');
+          print(
+              '- Desayuno: ${caloriesModel?.data.distribucionCalorica.desayuno} kcal');
+          print(
+              '- Almuerzo: ${caloriesModel?.data.distribucionCalorica.almuerzo} kcal');
+          print(
+              '- Cena: ${caloriesModel?.data.distribucionCalorica.cena} kcal');
+          print(
+              '- Meriendas: ${caloriesModel?.data.distribucionCalorica.meriendas} kcal');
+
+          isLoading = false;
+          notifyListeners();
+          return caloriesModel;
+        } catch (e) {
+          print("[CaloriesProvider] Error al procesar JSON: $e");
+          print("[CaloriesProvider] Respuesta que causó el error:");
+          print(response.body);
+          errorMessage = "Error al procesar la respuesta del servidor";
+          isLoading = false;
+          notifyListeners();
+          return null;
+        }
       } else if (response.statusCode == 403 || response.statusCode == 401) {
         throw Exception('Sesión expirada o no autorizada');
       } else {

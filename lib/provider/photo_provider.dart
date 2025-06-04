@@ -17,6 +17,7 @@ class PhotoProvider with ChangeNotifier {
   // URL base del backend
   final String baseUrl = 'http://192.168.1.5:4000/api';
 
+
   // Método para construir URLs
   String _buildUrl(String endpoint) {
     final url = '$baseUrl$endpoint';

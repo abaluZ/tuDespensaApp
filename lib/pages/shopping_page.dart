@@ -3,11 +3,13 @@ import 'package:provider/provider.dart';
 import 'package:tudespensa/Models/shopping_item.dart';
 import 'package:tudespensa/constants.dart';
 import 'package:tudespensa/pages/user_page.dart';
+import 'package:tudespensa/pages/shopping_history_page.dart';
 import 'package:tudespensa/provider/shopping_list_provider.dart';
 import 'package:tudespensa/widgets/appBarV.dart';
 import 'package:tudespensa/widgets/information/banner_page.dart';
 import 'package:tudespensa/widgets/shopping/shopping_item_list.dart';
 import 'package:tudespensa/widgets/shopping/show_dialog_add.dart';
+import 'package:tudespensa/widgets/reports/most_bought_report_button.dart';
 
 class ShoppingPage extends StatefulWidget {
   const ShoppingPage({super.key});
@@ -43,10 +45,11 @@ class _ShoppingPageState extends State<ShoppingPage> {
     shoppingListProvider.removeItem(item);
   }
 
-  void _saveOrUpdateList() {
+  Future<void> _saveOrUpdateList({bool completar = false}) async {
     final shoppingListProvider =
         Provider.of<ShoppingListProvider>(context, listen: false);
-    shoppingListProvider.saveOrUpdateShoppingList(context);
+    await shoppingListProvider.saveOrUpdateShoppingList(context,
+        completar: completar);
   }
 
   @override
@@ -76,9 +79,30 @@ class _ShoppingPageState extends State<ShoppingPage> {
               colorTexto: Colors.black,
             ),
             const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () => mostrarDialogoAgregar(context, _agregarItem),
-              child: const Text('Agregar'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () => mostrarDialogoAgregar(context, _agregarItem),
+                  child: const Text('Agregar'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ShoppingHistoryPage(),
+                      ),
+                    );
+                  },
+                  child: const Text('Ver Historial'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: MostBoughtReportButton(),
             ),
             const SizedBox(height: 20),
             ShoppingItemList(
@@ -88,15 +112,18 @@ class _ShoppingPageState extends State<ShoppingPage> {
             ),
             const SizedBox(height: 20),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: _saveOrUpdateList,
+                  onPressed: () => _saveOrUpdateList(),
                   child: const Text('Guardar Lista'),
                 ),
                 ElevatedButton(
-                  onPressed: _saveOrUpdateList,
-                  child: const Text('Actualizar Lista'),
+                  onPressed: () => _saveOrUpdateList(completar: true),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                  ),
+                  child: const Text('Completar Lista'),
                 ),
               ],
             ),
