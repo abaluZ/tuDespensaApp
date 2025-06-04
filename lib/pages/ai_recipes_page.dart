@@ -83,16 +83,16 @@ class _AIRecipesPageState extends State<AIRecipesPage> {
           print('JSON limpio: $cleanJsonString'); // Para depuración
           
           try {
-            final recipesJson = json.decode(cleanJsonString);
+          final recipesJson = json.decode(cleanJsonString);
             print('JSON decodificado: $recipesJson'); // Para depuración
-            
-            if (recipesJson['recetas_con_ingredientes_disponibles'] != null) {
-              final recetas = recipesJson['recetas_con_ingredientes_disponibles'];
+          
+          if (recipesJson['recetas_con_ingredientes_disponibles'] != null) {
+            final recetas = recipesJson['recetas_con_ingredientes_disponibles'];
               print('Recetas obtenidas: $recetas'); // Para depuración
-              
-              final List<Map<String, dynamic>> recetasLimpias = [];
-              for (var receta in recetas) {
-                if (receta is Map<String, dynamic>) {
+            
+            final List<Map<String, dynamic>> recetasLimpias = [];
+            for (var receta in recetas) {
+              if (receta is Map<String, dynamic>) {
                   // Asegurarse de que los ingredientes sean una lista
                   var ingredientes = receta['ingredientes'];
                   if (ingredientes != null) {
@@ -124,16 +124,16 @@ class _AIRecipesPageState extends State<AIRecipesPage> {
                   }
                   
                   recetasLimpias.add(receta);
-                }
               }
+            }
               
               print('Recetas procesadas: $recetasLimpias'); // Para depuración
-              
-              setState(() {
-                availableRecipes = recetasLimpias;
-                recipeData = decodedData;
-                isLoading = false;
-              });
+            
+            setState(() {
+              availableRecipes = recetasLimpias;
+              recipeData = decodedData;
+              isLoading = false;
+            });
             } else {
               throw Exception('No se encontraron recetas disponibles');
             }

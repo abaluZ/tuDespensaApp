@@ -106,16 +106,7 @@ class ReportsProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        return {
-          'totalLists': data['totalLists'],
-          'uniqueProducts': data['uniqueProducts'],
-          'products': (data['products'] as List).map((product) => {
-            'name': product['name'],
-            'count': product['count'],
-            'category': product['category'],
-          }).toList(),
-          'reportType': 'Semanal', // Esto debería venir del backend o calcularse según las fechas
-        };
+        return data; // Retornar los datos tal como vienen del backend
       } else {
         throw Exception('Error al obtener el reporte: ${response.body}');
       }

@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -322,212 +321,68 @@ class ShoppingListProvider extends ChangeNotifier {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Logo y título
-                Center(
-                  child: Column(
-                    children: [
-                      Image.asset(
-                        'assets/images/logo.png',
-                        height: 60,
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Reporte de Compras',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // Tipo de reporte y período
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.blue[50],
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Tipo de Reporte: ${report['reportType']}',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.blue[700],
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                // Estadísticas Generales
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Estadísticas Generales',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.blue[700],
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Total de listas analizadas: ${report['totalLists'] ?? 0}',
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                      Text(
-                        'Total de productos únicos: ${report['uniqueProducts'] ?? 0}',
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                // Productos más comprados
-                Text(
-                  'Productos Más Comprados',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.blue[700],
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                ...List.generate(
-                  (report['products'] as List? ?? []).length,
-                  (index) {
-                    final product = (report['products'] as List)[index];
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[50],
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.grey[200]!),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                '${index + 1}. ${product['name']}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.blue[100],
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Text(
-                                  'Veces: ${product['count']}',
-                                  style: TextStyle(
-                                    color: Colors.blue[700],
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          if (product['category'] != null) ...[
-                            const SizedBox(height: 4),
-                            Text(
-                              'Categoría: ${product['category']}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 20),
-                // Gráfico de frecuencia
-                Text(
-                  'Gráfico de Frecuencia de Compras',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.blue[700],
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                ..._buildFrequencyBars(report['products'] as List? ?? []),
-                const SizedBox(height: 16),
-                // Fecha de generación
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    'Reporte generado el: ${DateFormat('dd/MM/yyyy').format(DateTime.now())}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[600],
+          title: const Text('Reporte de Productos Más Comprados'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Período: ${DateFormat('dd/MM/yyyy').format(startDate)} - ${DateFormat('dd/MM/yyyy').format(endDate)}'),
+              const SizedBox(height: 8),
+              Text('Total de Listas: ${report['totalLists'] ?? 0}'),
+              Text('Total de Productos Únicos: ${report['uniqueProducts'] ?? 0}'),
+              const SizedBox(height: 16),
+              const Text('Productos más comprados:'),
+              const SizedBox(height: 8),
+              ...List.generate(
+                (report['products'] as List? ?? []).length,
+                (index) {
+                  final product = (report['products'] as List)[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(product['name'] ?? ''),
+                        Text('${product['count'] ?? 0}'),
+                      ],
                     ),
-                  ),
-                ),
-              ],
-            ),
+                  );
+                },
+              ),
+            ],
           ),
           actions: [
-            TextButton.icon(
+            TextButton(
               onPressed: () async {
-                final filePath = await downloadMostBoughtReportPDF(
-                  context,
+                final filePath = await reportsProvider.downloadMostBoughtReportPDF(
                   startDate: startDate,
                   endDate: endDate,
                 );
+                
                 if (filePath != null) {
+                  // ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Reporte guardado en: $filePath'),
+                      duration: const Duration(seconds: 5),
+                    ),
+                  );
                   await OpenFile.open(filePath);
+                } else {
+                  // ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Error al descargar el reporte PDF'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
                 }
               },
-              icon: const Icon(Icons.download),
-              label: const Text('Descargar PDF'),
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.blue[700],
-              ),
+              child: const Text('Descargar PDF'),
             ),
-            TextButton.icon(
+            TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              icon: const Icon(Icons.close),
-              label: const Text('Cerrar'),
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.grey[700],
-              ),
+              child: const Text('Cerrar'),
             ),
           ],
         ),
@@ -541,64 +396,6 @@ class ShoppingListProvider extends ChangeNotifier {
         ),
       );
     }
-  }
-
-  List<Widget> _buildFrequencyBars(List products) {
-    final maxCount = products.isEmpty
-        ? 1
-        : (products.map((p) => p['count'] as int).reduce(max)).toDouble();
-
-    return products.map((product) {
-      final count = (product['count'] as int).toDouble();
-      return Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: Text(
-                    product['name'],
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                ),
-                Expanded(
-                  flex: 7,
-                  child: Stack(
-                    children: [
-                      Container(
-                        height: 20,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      FractionallySizedBox(
-                        widthFactor: count / maxCount,
-                        child: Container(
-                          height: 20,
-                          decoration: BoxDecoration(
-                            color: Colors.blue[400],
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  '(${count.toInt()})',
-                  style: const TextStyle(fontSize: 12),
-                ),
-              ],
-            ),
-          ],
-        ),
-      );
-    }).toList();
   }
 
   Future<String?> downloadMostBoughtReportPDF(
