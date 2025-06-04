@@ -15,7 +15,8 @@ class PhotoProvider with ChangeNotifier {
   final ImagePicker _picker = ImagePicker();
 
   // URL base del backend
-  final String baseUrl = 'http://192.168.0.12:4000/api';
+  final String baseUrl = 'http://192.168.1.5:4000/api';
+
 
   // Método para construir URLs
   String _buildUrl(String endpoint) {

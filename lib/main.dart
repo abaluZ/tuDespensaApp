@@ -17,7 +17,7 @@ import 'package:tudespensa/provider/profile_provider.dart';
 import 'package:tudespensa/provider/reports_provider.dart';
 import 'package:tudespensa/provider/shopping_list_provider.dart';
 import 'package:tudespensa/provider/type_diet_provider.dart';
-//import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:tudespensa/provider/favorites_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,6 +43,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => DespensaUserProvider()),
         ChangeNotifierProvider(create: (_) => CaloriesProvider()),
         ChangeNotifierProvider(create: (_) => PhotoProvider()),
+        ChangeNotifierProvider(create: (_) => FavoritesProvider()),
         ChangeNotifierProvider(create: (_) => ReportsProvider()),
       ],
       child: ScreenUtilInit(

@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../Models/recipe_model.dart';
+import '../../provider/favorites_provider.dart';
 
 class RecipeCard extends StatelessWidget {
-  final String image;
-  final String title;
-  final int calories;
-  final int duration;
-  final String difficulty;
+  final Recipe recipe;
+  final VoidCallback onTap;
 
   const RecipeCard({
     super.key,
-    required this.image,
-    required this.title,
-    required this.calories,
-    required this.duration,
-    required this.difficulty,
+    required this.recipe,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final favoritesProvider = Provider.of<FavoritesProvider>(context);
+    final isFavorite = favoritesProvider.isFavorite(recipe);
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
@@ -31,11 +31,19 @@ class RecipeCard extends StatelessWidget {
             // Imagen con bordes redondeados
             ClipRRect(
               borderRadius: BorderRadius.circular(15),
-              child: Image.asset(
-                image,
+              child: SizedBox(
                 width: 120,
                 height: 120,
-                fit: BoxFit.cover,
+                child: Image.asset(
+                  recipe.imagen,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset(
+                      '/assets/images/recetas/default_recipe.png',
+                      fit: BoxFit.cover,
+                    );
+                  },
+                ),
               ),
             ),
 
@@ -46,36 +54,50 @@ class RecipeCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          recipe.nombre,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                          color: isFavorite ? Colors.red : Colors.grey,
+                        ),
+                        onPressed: () {
+                          favoritesProvider.toggleFavorite(recipe);
+                        },
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 8),
                   Row(
                     children: [
                       const Icon(Icons.local_fire_department, size: 18),
                       const SizedBox(width: 4),
-                      Text('$calories kcal'),
+                      Text('${recipe.calorias} kcal'),
                       const SizedBox(width: 12),
                       const Icon(Icons.timer, size: 18),
                       const SizedBox(width: 4),
-                      Text('$duration min'),
+                      Text(recipe.tiempo),
                       const SizedBox(width: 12),
                       const Icon(Icons.restaurant_menu, size: 18),
                       const SizedBox(width: 4),
-                      Text(difficulty),
+                      Text(recipe.dificultad),
                     ],
                   ),
                   const SizedBox(height: 12),
                   Row(
                     children: [
                       TextButton(
-                        onPressed: () {
-                          // Acción de ver receta
-                        },
+                        onPressed: onTap,
                         child: const Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [

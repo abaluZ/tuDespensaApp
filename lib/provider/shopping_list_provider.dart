@@ -11,7 +11,9 @@ import 'package:intl/intl.dart';
 import 'auth_provider.dart';
 
 class ShoppingListProvider extends ChangeNotifier {
-  final String baseUrl = 'http://192.168.0.12:4000/api';
+  final String baseUrl =
+      'http://192.168.1.5:4000/api'; // ajusta si usas IP local o deploy
+
 
   List<ShoppingItem> _shoppingItems = [];
   List<ShoppingListHistory> _historyItems = [];

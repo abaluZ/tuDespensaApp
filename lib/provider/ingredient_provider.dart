@@ -5,7 +5,8 @@ import 'package:tudespensa/Models/ingredient.dart';
 
 class IngredientProvider extends ChangeNotifier {
   final String baseUrl =
-      'http://192.168.0.12:3000'; // Usa la dirección IP de tu máquina de desarrollo
+      'http://192.168.1.5:3000'; // Usa la dirección IP de tu máquina de desarrollo
+
 
   List<Ingredient> _ingredients = [];
   bool _isLoading = false;

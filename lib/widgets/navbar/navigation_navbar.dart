@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tudespensa/constants.dart';
 import 'package:tudespensa/pages/settings_page.dart';
 import 'package:tudespensa/pages/shopping_page.dart';
+import 'package:tudespensa/pages/favorites_page.dart';
 
 class NavigationNavbar extends StatelessWidget {
   const NavigationNavbar({super.key});
@@ -40,7 +41,12 @@ class NavigationNavbar extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => const ShoppingPage()),
               );
             }),
-            _buildIconButton('assets/icons/heart.svg', () {}),
+            _buildIconButton('assets/icons/heart.svg', () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const FavoritesPage()),
+              );
+            }),
             _buildIconButton('assets/icons/ajustes.svg', () {
               Navigator.push(
                 context,

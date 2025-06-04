@@ -3,32 +3,38 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:tudespensa/Models/calories_model.dart';
 import 'package:tudespensa/Utils/preferences.dart';
+import '../services/api_service.dart';
 
 class CaloriesProvider with ChangeNotifier {
   final prefs = Preferences();
-  CaloriesModel? caloriesModel;
+  CaloriesModel? _caloriesModel;
+  bool _isLoading = false;
+  String? _errorMessage;
 
-  bool isLoading = false;
-  String? errorMessage;
+  CaloriesModel? get caloriesModel => _caloriesModel;
+  bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
+
+  // Getter para acceder directamente a las calorías
+  CaloriesData? get calories => _caloriesModel?.data;
 
   // URL base del backend
-  final String baseUrl = 'http://192.168.0.12:4000/api';
+  final String baseUrl = 'http://192.168.1.5:4000/api';
+
 
   Future<CaloriesModel?> fetchCaloriesData() async {
+    if (_isLoading) return _caloriesModel;
+    
     print('[CaloriesProvider] Iniciando carga de datos de calorías...');
-    isLoading = true;
-    errorMessage = null;
+    _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
     try {
       final token = prefs.authToken;
 
       if (token.isEmpty) {
-        errorMessage = "Token no encontrado";
-        print("[CaloriesProvider] Error: Token no encontrado");
-        isLoading = false;
-        notifyListeners();
-        return null;
+        throw Exception('Token no encontrado');
       }
 
       final url = '$baseUrl/calorias';
@@ -47,6 +53,10 @@ class CaloriesProvider with ChangeNotifier {
       print(response.body);
 
       if (response.statusCode == 200) {
+        final decodedBody = json.decode(response.body);
+        _caloriesModel = CaloriesModel.fromJson(decodedBody);
+        _errorMessage = null;
+        print('[CaloriesProvider] Datos cargados exitosamente');
         try {
           final decodedBody = json.decode(response.body);
           print('[CaloriesProvider] Respuesta decodificada:');
@@ -87,33 +97,28 @@ class CaloriesProvider with ChangeNotifier {
           return null;
         }
       } else if (response.statusCode == 403 || response.statusCode == 401) {
-        errorMessage = "Sesión expirada o no autorizada";
-        print("[CaloriesProvider] Error: Sesión expirada o no autorizada");
-        isLoading = false;
-        notifyListeners();
-        return null;
+        throw Exception('Sesión expirada o no autorizada');
       } else {
-        errorMessage = "Error del servidor (${response.statusCode})";
-        print("[CaloriesProvider] Error del servidor: ${response.statusCode}");
-        print("[CaloriesProvider] Respuesta:");
-        print(response.body);
-        isLoading = false;
-        notifyListeners();
-        return null;
+        throw Exception('Error del servidor (${response.statusCode})');
       }
-    } catch (e, stackTrace) {
-      errorMessage = "Error de conexión";
-      print("[CaloriesProvider] Error de excepción: $e");
-      print("[CaloriesProvider] Stack trace: $stackTrace");
-      isLoading = false;
+    } catch (e) {
+      print('[CaloriesProvider] Error: $e');
+      _errorMessage = e.toString();
+      _caloriesModel = null;
+    } finally {
+      _isLoading = false;
       notifyListeners();
-      return null;
     }
+    
+    return _caloriesModel;
   }
+
+  // Alias para mantener compatibilidad
+  Future<void> fetchCalories() => fetchCaloriesData();
 
   void clearCaloriesData() {
     print('[CaloriesProvider] Limpiando datos de calorías');
-    caloriesModel = null;
+    _caloriesModel = null;
     notifyListeners();
   }
 }
