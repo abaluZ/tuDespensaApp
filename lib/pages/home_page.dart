@@ -21,6 +21,18 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   @override
+  void initState() {
+    super.initState();
+    _loadCaloriesData();
+  }
+
+  Future<void> _loadCaloriesData() async {
+    final caloriesProvider =
+        Provider.of<CaloriesProvider>(context, listen: false);
+    await caloriesProvider.fetchCaloriesData();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: NavigationNavbar(),
@@ -51,15 +63,67 @@ class _HomePageState extends State<HomePage> {
 
             const SizedBox(height: 15),
 
+            // Mostrar mensaje de carga o error
+            Consumer<CaloriesProvider>(
+              builder: (context, caloriesProvider, child) {
+                if (caloriesProvider.isLoading) {
+                  return const CircularProgressIndicator();
+                } else if (caloriesProvider.errorMessage != null) {
+                  return Text(
+                    'Error: ${caloriesProvider.errorMessage}',
+                    style: TextStyle(color: Colors.red),
+                  );
+                } else if (caloriesProvider.caloriesModel != null) {
+                  // Imprime la información relevante en la consola
+                  print(
+                      'Desayuno: ${caloriesProvider.caloriesModel!.data.distribucionCalorica.desayuno} kcal');
+                  print(
+                      'Almuerzo: ${caloriesProvider.caloriesModel!.data.distribucionCalorica.almuerzo} kcal');
+                  print(
+                      'Cena: ${caloriesProvider.caloriesModel!.data.distribucionCalorica.cena} kcal');
+
+                  // Ya no mostrar mensaje de éxito
+                  return const SizedBox.shrink();
+                } else {
+                  return const Text('No hay datos de calorías disponibles');
+                }
+              },
+            ),
+
+            const SizedBox(height: 25),
+
             // Recetas recomendadas
             RecetasRecomendadasButton(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const RecipesRecommended(),
-                  ),
-                );
+              onTap: () async {
+                // Obtener el provider
+                final caloriesProvider =
+                    Provider.of<CaloriesProvider>(context, listen: false);
+
+                // Imprimir en consola antes de navegar
+                print('Navegando a Recetas Recomendadas');
+                print('Datos de calorías: ${caloriesProvider.caloriesModel}');
+
+                if (caloriesProvider.caloriesModel != null) {
+                  // Definir los tipos de comidas y el máximo de calorías
+                  final mealTypes = ['desayuno', 'almuerzo', 'cena'];
+                  final maxCalories =
+                      caloriesProvider.caloriesModel!.data.caloriasDiarias;
+
+                  // Navegar a la página RecipesRecommended con los argumentos
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => RecipesRecommended(),
+                    ),
+                  );
+                } else {
+                  // Manejar el caso en el que no se puedan obtener los datos
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text(
+                            'No se pudieron obtener los datos de calorías.')),
+                  );
+                }
               },
             ),
 
@@ -78,7 +142,8 @@ class _HomePageState extends State<HomePage> {
                     if (context.mounted) {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const Goalpagev()),
+                        MaterialPageRoute(
+                            builder: (context) => const Goalpagev()),
                       );
                     }
                   },
@@ -112,8 +177,7 @@ class _HomePageState extends State<HomePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const DespensaPage(),
-                      ),
+                          builder: (context) => const DespensaPage()),
                     );
                   },
                 ),

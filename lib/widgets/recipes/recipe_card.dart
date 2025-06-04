@@ -6,6 +6,7 @@ class RecipeCard extends StatelessWidget {
   final int calories;
   final int duration;
   final String difficulty;
+  final VoidCallback onTap; // Agregar el parámetro onTap
 
   const RecipeCard({
     super.key,
@@ -14,6 +15,7 @@ class RecipeCard extends StatelessWidget {
     required this.calories,
     required this.duration,
     required this.difficulty,
+    required this.onTap, // Agregar el parámetro onTap
   });
 
   @override
@@ -31,11 +33,19 @@ class RecipeCard extends StatelessWidget {
             // Imagen con bordes redondeados
             ClipRRect(
               borderRadius: BorderRadius.circular(15),
-              child: Image.asset(
-                image,
+              child: SizedBox(
                 width: 120,
                 height: 120,
-                fit: BoxFit.cover,
+                child: Image.asset(
+                  image,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset(
+                      '/assets/images/recetas/default_recipe.png',
+                      fit: BoxFit.cover,
+                    );
+                  },
+                ),
               ),
             ),
 
@@ -73,9 +83,7 @@ class RecipeCard extends StatelessWidget {
                   Row(
                     children: [
                       TextButton(
-                        onPressed: () {
-                          // Acción de ver receta
-                        },
+                        onPressed: onTap, // Usar el parámetro onTap
                         child: const Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
