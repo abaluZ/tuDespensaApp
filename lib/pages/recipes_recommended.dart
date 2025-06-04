@@ -137,11 +137,7 @@ class _RecipesRecommendedState extends State<RecipesRecommended> {
                     itemBuilder: (context, index) {
                       final recipe = _filteredRecipes[index];
                       return RecipeCard(
-                        image: recipe.imagen,
-                        title: recipe.nombre,
-                        calories: recipe.calorias,
-                        duration: int.tryParse(recipe.tiempo.replaceAll(' min', '')) ?? 0,
-                        difficulty: recipe.dificultad,
+                        recipe: recipe,
                         onTap: () {
                           Navigator.push(
                             context,
