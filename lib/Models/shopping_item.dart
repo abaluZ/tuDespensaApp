@@ -29,11 +29,11 @@ class ShoppingItem {
 
   factory ShoppingItem.fromMap(Map<String, dynamic> map) {
     return ShoppingItem(
-      id: map['id'],
-      nombre: map['nombre'],
-      categoria: map['categoria'],
-      cantidad: map['cantidad'],
-      unidad: map['unidad'],
+      id: map['id']?.toString() ?? '',
+      nombre: map['nombre']?.toString() ?? '',
+      categoria: map['categoria']?.toString() ?? 'Sin categoría',
+      cantidad: (map['cantidad'] is num) ? (map['cantidad'] as num).toDouble() : 0.0,
+      unidad: map['unidad']?.toString() ?? 'unidad',
       comprado: map['comprado'] ?? false,
     );
   }

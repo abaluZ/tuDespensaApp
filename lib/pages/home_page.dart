@@ -4,6 +4,7 @@ import 'package:tudespensa/constants.dart';
 import 'package:tudespensa/pages/despensa_page.dart';
 import 'package:tudespensa/pages/goalPageV.dart';
 import 'package:tudespensa/pages/recipes_recommended.dart';
+import 'package:tudespensa/pages/ai_recipes_page.dart';
 import 'package:tudespensa/provider/profile_provider.dart';
 import 'package:tudespensa/widgets/home/header_home.dart';
 import 'package:tudespensa/widgets/home/image_button.dart';
@@ -86,7 +87,14 @@ class _HomePageState extends State<HomePage> {
                 ImageButton(
                   imagePath: 'assets/images/recetasButton.png',
                   label: 'Recetas IA',
-                  onTap: () {},
+                  onTap: () {
+                    print('Navegando a Recetas IA');
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const AIRecipesPage(),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
