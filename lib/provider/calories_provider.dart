@@ -39,6 +39,7 @@ class CaloriesProvider with ChangeNotifier {
       final url = '$baseUrl/calorias';
       print('[CaloriesProvider] Realizando petición a: $url');
 
+
       final response = await http.get(
         Uri.parse(url),
         headers: {
@@ -81,4 +82,6 @@ class CaloriesProvider with ChangeNotifier {
     _caloriesModel = null;
     notifyListeners();
   }
+}
+
 }

@@ -169,75 +169,62 @@ class _HomePageState extends State<HomePage> {
 
                 const SizedBox(height: 25),
 
-                // Botones principales 1
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ImageButton(
-                      imagePath: 'assets/images/objetivoButton.png',
-                      label: 'Objetivo',
-                      onTap: () async {
-                        final caloriesProvider = context.read<CaloriesProvider>();
-                        await caloriesProvider.fetchCaloriesData();
-                        if (context.mounted) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Goalpagev()),
-                          );
-                        }
-                      },
-                    ),
-                    const SizedBox(width: 15),
-                    ImageButton(
-                      imagePath: 'assets/images/recetasButton.png',
-                      label: 'Recetas IA',
-                      onTap: () {
-                        print('Navegando a Recetas IA');
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const AIRecipesPage(),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
+            // Botones principales 1
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ImageButton(
+                  imagePath: 'assets/images/objetivoButton.png',
+                  label: 'Objetivo',
+                  onTap: () async {
+                    final caloriesProvider = context.read<CaloriesProvider>();
+                    await caloriesProvider.fetchCaloriesData();
+                    if (context.mounted) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Goalpagev()),
+                      );
+                    }
+                  },
                 ),
-
-                const SizedBox(height: 15),
-
-                // Botones principales 2
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ImageButton(
-                      imagePath: 'assets/images/despensabutton.png',
-                      label: 'Despensa',
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const DespensaPage()),
-                        );
-                      },
-                    ),
-                    const SizedBox(width: 15),
-                    ImageButton(
-                      imagePath: 'assets/images/historialButton.png',
-                      label: 'Historial',
-                      onTap: () {},
-                    ),
-                  ],
+                const SizedBox(width: 15),
+                ImageButton(
+                  imagePath: 'assets/images/recetasButton.png',
+                  label: 'Recetas IA',
+                  onTap: () {},
                 ),
               ],
             ),
-            if (_isLoading)
-              Container(
-                color: Colors.black.withOpacity(0.3),
-                child: const Center(
-                  child: CircularProgressIndicator(),
+
+                const SizedBox(height: 15),
+
+            // Botones principales 2
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ImageButton(
+                  imagePath: 'assets/images/despensabutton.png',
+                  label: 'Despensa',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const DespensaPage(),
+                      ),
+                    );
+                  },
                 ),
-              ),
+                const SizedBox(width: 15),
+                ImageButton(
+                  imagePath: 'assets/images/historialButton.png',
+                  label: 'Historial',
+                  onTap: () {},
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 15),
           ],
         ),
       ),

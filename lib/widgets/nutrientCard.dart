@@ -50,15 +50,20 @@ class TarjetaNutrientes extends StatelessWidget {
   Widget build(BuildContext context) {
     final caloriesProvider = context.watch<CaloriesProvider>();
     final profileProvider = context.watch<ProfileProvider>();
-    
-    print('[TarjetaNutrientes] Plan del usuario: ${profileProvider.userModel?.plan}');
-    final isPremium = profileProvider.userModel?.plan?.toLowerCase() == 'premium';
+
+    print(
+        '[TarjetaNutrientes] Plan del usuario: ${profileProvider.userModel?.plan}');
+    final isPremium =
+        profileProvider.userModel?.plan?.toLowerCase() == 'premium';
     print('[TarjetaNutrientes] ¿Es usuario premium?: $isPremium');
 
     final calorias = caloriesProvider.caloriesModel?.data.caloriasDiarias ?? 0;
-    final carbohidratos = caloriesProvider.caloriesModel?.data.macronutrientes.carbohidratos ?? 0;
-    final proteinas = caloriesProvider.caloriesModel?.data.macronutrientes.proteinas ?? 0;
-    final grasas = caloriesProvider.caloriesModel?.data.macronutrientes.grasas ?? 0;
+    final carbohidratos =
+        caloriesProvider.caloriesModel?.data.macronutrientes.carbohidratos ?? 0;
+    final proteinas =
+        caloriesProvider.caloriesModel?.data.macronutrientes.proteinas ?? 0;
+    final grasas =
+        caloriesProvider.caloriesModel?.data.macronutrientes.grasas ?? 0;
 
     print('[TarjetaNutrientes] Mostrando datos:');
     print('- Calorías: $calorias');
@@ -84,7 +89,8 @@ class TarjetaNutrientes extends StatelessWidget {
               if (!isPremium) ...[
                 const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.black87,
                     borderRadius: BorderRadius.circular(12),
@@ -187,22 +193,26 @@ class TarjetaNutrientes extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _formatoLinea('Desayuno', '${caloriesProvider.caloriesModel?.data.distribucionCalorica.desayuno ?? 0} Kcal'),
+                      _formatoLinea('Desayuno',
+                          '${caloriesProvider.caloriesModel?.data.distribucionCalorica.desayuno ?? 0} Kcal'),
                       style: const TextStyle(fontSize: 16),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      _formatoLinea('Almuerzo', '${caloriesProvider.caloriesModel?.data.distribucionCalorica.almuerzo ?? 0} Kcal'),
+                      _formatoLinea('Almuerzo',
+                          '${caloriesProvider.caloriesModel?.data.distribucionCalorica.almuerzo ?? 0} Kcal'),
                       style: const TextStyle(fontSize: 16),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      _formatoLinea('Cena', '${caloriesProvider.caloriesModel?.data.distribucionCalorica.cena ?? 0} Kcal'),
+                      _formatoLinea('Cena',
+                          '${caloriesProvider.caloriesModel?.data.distribucionCalorica.cena ?? 0} Kcal'),
                       style: const TextStyle(fontSize: 16),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      _formatoLinea('Meriendas', '${caloriesProvider.caloriesModel?.data.distribucionCalorica.meriendas ?? 0} Kcal'),
+                      _formatoLinea('Meriendas',
+                          '${caloriesProvider.caloriesModel?.data.distribucionCalorica.meriendas ?? 0} Kcal'),
                       style: const TextStyle(fontSize: 16),
                     ),
                   ],

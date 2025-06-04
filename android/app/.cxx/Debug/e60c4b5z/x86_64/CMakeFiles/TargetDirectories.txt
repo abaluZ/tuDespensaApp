@@ -1,0 +1,2 @@
+C:/VScode/tuDespensaApp/android/app/.cxx/Debug/e60c4b5z/x86_64/CMakeFiles/edit_cache.dir
+C:/VScode/tuDespensaApp/android/app/.cxx/Debug/e60c4b5z/x86_64/CMakeFiles/rebuild_cache.dir

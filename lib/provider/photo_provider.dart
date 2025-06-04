@@ -49,6 +49,8 @@ class PhotoProvider with ChangeNotifier {
 
       print(
           '[PhotoProvider] Preparando archivo para subir: ${profilePhoto.path}');
+      print(
+          '[PhotoProvider] Preparando archivo para subir: ${profilePhoto.path}');
       final fileStats = await profilePhoto.stat();
       print('[PhotoProvider] Tamaño del archivo: ${fileStats.size} bytes');
 
@@ -74,6 +76,8 @@ class PhotoProvider with ChangeNotifier {
         contentType: mediaType,
       );
 
+      print(
+          '[PhotoProvider] Tipo de contenido del archivo: ${multipartFile.contentType}');
       print(
           '[PhotoProvider] Tipo de contenido del archivo: ${multipartFile.contentType}');
       request.files.add(multipartFile);
@@ -183,6 +187,8 @@ class PhotoProvider with ChangeNotifier {
               const SnackBar(
                 content: Text(
                     'Por favor selecciona una imagen en formato JPG, PNG, GIF o WebP'),
+                content: Text(
+                    'Por favor selecciona una imagen en formato JPG, PNG, GIF o WebP'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -192,6 +198,7 @@ class PhotoProvider with ChangeNotifier {
 
         final File imageFile = File(pickedImage.path);
         final result = await uploadProfilePhoto(imageFile);
+
 
         if (result) {
           if (context.mounted) {
@@ -225,4 +232,6 @@ class PhotoProvider with ChangeNotifier {
       }
     }
   }
+}
+
 }
