@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tudespensa/constants.dart';
@@ -6,13 +5,11 @@ import 'package:tudespensa/pages/despensa_page.dart';
 import 'package:tudespensa/pages/goalPageV.dart';
 import 'package:tudespensa/pages/recipes_recommended.dart';
 import 'package:tudespensa/provider/profile_provider.dart';
-import 'package:tudespensa/provider/reports_provider.dart';
 import 'package:tudespensa/widgets/home/header_home.dart';
 import 'package:tudespensa/widgets/home/image_button.dart';
 import 'package:tudespensa/widgets/navbar/navigation_navbar.dart';
 import 'package:tudespensa/widgets/home/recommended_recipes_button.dart';
 import 'package:tudespensa/provider/calories_provider.dart';
-import 'package:open_file/open_file.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -123,102 +120,6 @@ class _HomePageState extends State<HomePage> {
             ),
 
             const SizedBox(height: 15),
-
-            // Botón de descarga de reporte
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Consumer<ReportsProvider>(
-                builder: (context, reportsProvider, child) {
-                  return ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Verde,
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    onPressed: reportsProvider.isLoading
-                        ? null
-                        : () async {
-                            final filePath =
-                                await reportsProvider.downloadReport();
-                            if (filePath != null) {
-                              final file = File(filePath);
-                              if (await file.exists()) {
-                                try {
-                                  final result = await OpenFile.open(
-                                    filePath,
-                                    type: 'application/pdf',
-                                  );
-                                  if (result.type != ResultType.done) {
-                                    if (context.mounted) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                              "Por favor instala una aplicación para ver PDFs"),
-                                          backgroundColor: Colors.red,
-                                        ),
-                                      );
-                                    }
-                                  }
-                                } catch (e) {
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text("Error al abrir el PDF"),
-                                        backgroundColor: Colors.red,
-                                      ),
-                                    );
-                                  }
-                                }
-                              } else {
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text("El archivo no existe"),
-                                      backgroundColor: Colors.red,
-                                    ),
-                                  );
-                                }
-                              }
-                            } else {
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        reportsProvider.errorMessage ??
-                                            "Error al descargar el reporte"),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                              }
-                            }
-                          },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.download_rounded,
-                          color: Colors.white,
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          reportsProvider.isLoading
-                              ? "Descargando..."
-                              : "Descargar Reporte PDF",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
           ],
         ),
       ),
