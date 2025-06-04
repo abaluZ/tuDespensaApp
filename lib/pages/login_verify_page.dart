@@ -86,23 +86,28 @@ class LoginVerifyPage extends StatelessWidget {
                           codigo: codeController.text.trim(),
                           password: passwordController.text.trim(),
                         );
+                        print("Verificación de código completada: $success");
                         if (success) {
-                          final response =
-                              await profileProvider.fetchUserProfile();
+                          print("Intentando obtener perfil de usuario...");
+                          final response = await profileProvider.fetchUserProfile();
+                          print("Respuesta del perfil: $response");
                           if (response != null) {
+                            print("Navegando a HomePage...");
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(builder: (_) => HomePage()),
                             );
                           } else {
+                            print("Error al cargar perfil: ${profileProvider.errorMessage}");
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Error al cargar el perfil"),
+                              SnackBar(
+                                content: Text(profileProvider.errorMessage ?? "Error al cargar el perfil"),
                                 backgroundColor: Colors.red,
                               ),
                             );
                           }
                         } else {
+                          print("Error en la verificación del código");
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text("Error al verificar código"),

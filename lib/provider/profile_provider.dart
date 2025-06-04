@@ -28,7 +28,7 @@ class ProfileProvider with ChangeNotifier {
       }
 
       final response = await http.get(
-        Uri.parse('http://192.168.0.57:4000/api/profileApp'),
+        Uri.parse('http://192.168.1.5:4000/api/profileApp'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -41,19 +41,25 @@ class ProfileProvider with ChangeNotifier {
         userModel = UserModel.fromJson(data);
         isLoading = false;
         notifyListeners();
-        return UserModel.fromJson(data);
+        return userModel;
       } else if (response.statusCode == 403 || response.statusCode == 401) {
         print("Entrando 403 o 401");
         errorMessage = "Sesión expirada o no autorizada";
+        isLoading = false;
+        notifyListeners();
         return null;
       } else {
         errorMessage = "Error al cargar perfil (${response.statusCode})";
         print("Entrando error perfil");
+        isLoading = false;
+        notifyListeners();
         return null;
       }
     } catch (e) {
       errorMessage = "Error de red o servidor";
-      print("Entrando catch");
+      print("Entrando catch: $e");
+      isLoading = false;
+      notifyListeners();
       return null;
     }
   }

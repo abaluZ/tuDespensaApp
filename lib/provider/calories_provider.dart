@@ -19,9 +19,11 @@ class CaloriesProvider with ChangeNotifier {
   CaloriesData? get calories => _caloriesModel?.data;
 
   // URL base del backend
-  final String baseUrl = 'http://192.168.0.57:4000/api';
+  final String baseUrl = 'http://192.168.1.5:4000/api';
 
   Future<CaloriesModel?> fetchCaloriesData() async {
+    if (_isLoading) return _caloriesModel;
+    
     print('[CaloriesProvider] Iniciando carga de datos de calorías...');
     _isLoading = true;
     _errorMessage = null;
@@ -31,11 +33,7 @@ class CaloriesProvider with ChangeNotifier {
       final token = prefs.authToken;
 
       if (token.isEmpty) {
-        _errorMessage = "Token no encontrado";
-        print("[CaloriesProvider] Error: Token no encontrado");
-        _isLoading = false;
-        notifyListeners();
-        return null;
+        throw Exception('Token no encontrado');
       }
 
       final url = '$baseUrl/calorias';
@@ -54,91 +52,33 @@ class CaloriesProvider with ChangeNotifier {
       print(response.body);
 
       if (response.statusCode == 200) {
-        try {
-          final decodedBody = json.decode(response.body);
-          print('[CaloriesProvider] Respuesta decodificada:');
-          print(const JsonEncoder.withIndent('  ').convert(decodedBody));
-
-          _caloriesModel = CaloriesModel.fromJson(decodedBody);
-          print('[CaloriesProvider] Modelo creado exitosamente');
-          print('[CaloriesProvider] Datos cargados:');
-          print('- Mensaje: ${_caloriesModel?.message}');
-          print('- Calorías diarias: ${_caloriesModel?.data.caloriasDiarias}');
-          print('- TMB: ${_caloriesModel?.data.tmb}');
-          print('\nMacronutrientes:');
-          print(
-              '- Proteínas: ${_caloriesModel?.data.macronutrientes.proteinas}g');
-          print('- Grasas: ${_caloriesModel?.data.macronutrientes.grasas}g');
-          print(
-              '- Carbohidratos: ${_caloriesModel?.data.macronutrientes.carbohidratos}g');
-          print('\nDistribución calórica:');
-          print(
-              '- Desayuno: ${_caloriesModel?.data.distribucionCalorica.desayuno} kcal');
-          print(
-              '- Almuerzo: ${_caloriesModel?.data.distribucionCalorica.almuerzo} kcal');
-          print(
-              '- Cena: ${_caloriesModel?.data.distribucionCalorica.cena} kcal');
-          print(
-              '- Meriendas: ${_caloriesModel?.data.distribucionCalorica.meriendas} kcal');
-
-          _isLoading = false;
-          notifyListeners();
-          return _caloriesModel;
-        } catch (e) {
-          print("[CaloriesProvider] Error al procesar JSON: $e");
-          print("[CaloriesProvider] Respuesta que causó el error:");
-          print(response.body);
-          _errorMessage = "Error al procesar la respuesta del servidor";
-          _isLoading = false;
-          notifyListeners();
-          return null;
-        }
+        final decodedBody = json.decode(response.body);
+        _caloriesModel = CaloriesModel.fromJson(decodedBody);
+        _errorMessage = null;
+        print('[CaloriesProvider] Datos cargados exitosamente');
       } else if (response.statusCode == 403 || response.statusCode == 401) {
-        _errorMessage = "Sesión expirada o no autorizada";
-        print("[CaloriesProvider] Error: Sesión expirada o no autorizada");
-        _isLoading = false;
-        notifyListeners();
-        return null;
+        throw Exception('Sesión expirada o no autorizada');
       } else {
-        _errorMessage = "Error del servidor (${response.statusCode})";
-        print("[CaloriesProvider] Error del servidor: ${response.statusCode}");
-        print("[CaloriesProvider] Respuesta:");
-        print(response.body);
-        _isLoading = false;
-        notifyListeners();
-        return null;
+        throw Exception('Error del servidor (${response.statusCode})');
       }
-    } catch (e, stackTrace) {
-      _errorMessage = "Error de conexión";
-      print("[CaloriesProvider] Error de excepción: $e");
-      print("[CaloriesProvider] Stack trace: $stackTrace");
-      _isLoading = false;
-      notifyListeners();
-      return null;
-    }
-  }
-
-  void clearCaloriesData() {
-    print('[CaloriesProvider] Limpiando datos de calorías');
-    _caloriesModel = null;
-    notifyListeners();
-  }
-
-  Future<void> fetchCalories() async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
-
-    try {
-      final response = await ApiService.getCalories();
-      _caloriesModel = CaloriesModel.fromJson(response);
-      _errorMessage = null;
     } catch (e) {
+      print('[CaloriesProvider] Error: $e');
       _errorMessage = e.toString();
       _caloriesModel = null;
     } finally {
       _isLoading = false;
       notifyListeners();
     }
+    
+    return _caloriesModel;
+  }
+
+  // Alias para mantener compatibilidad
+  Future<void> fetchCalories() => fetchCaloriesData();
+
+  void clearCaloriesData() {
+    print('[CaloriesProvider] Limpiando datos de calorías');
+    _caloriesModel = null;
+    notifyListeners();
   }
 }

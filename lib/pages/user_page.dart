@@ -4,6 +4,7 @@ import 'package:tudespensa/constants.dart';
 import 'package:tudespensa/pages/account_page.dart';
 import 'package:tudespensa/pages/home_page.dart';
 import 'package:tudespensa/provider/profile_provider.dart';
+import 'package:tudespensa/provider/type_diet_provider.dart';
 import 'package:tudespensa/widgets/appBarV.dart';
 import 'package:tudespensa/widgets/user/profile_field_input.dart';
 import 'package:tudespensa/widgets/user/update_button.dart';
@@ -132,13 +133,12 @@ class UserPage extends StatelessWidget {
                               },
                             ),
                             SizedBox(height: 8),
-                            Consumer<ProfileProvider>(
-                              builder: (context, profileProvider, child) {
+                            Consumer<TypeDietProvider>(
+                              builder: (context, dietProvider, child) {
                                 return ProfielInput(
                                   titulo: 'Preferencia de dieta',
-                                  contenido: profileProvider.userModel?.edad ??
-                                      'Introducir',
-                                  cargando: profileProvider.isLoading,
+                                  contenido: dietProvider.dietAsText ?? 'No seleccionada',
+                                  cargando: false,
                                   colorFondo: Verde,
                                 );
                               },
