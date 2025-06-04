@@ -16,6 +16,7 @@ class AIRecipesPage extends StatefulWidget {
 
 class _AIRecipesPageState extends State<AIRecipesPage> {
   final prefs = Preferences();
+  final String baseUrl = 'http://192.168.1.5:4000/api';
   String? selectedMealType;
   bool isLoading = false;
   Map<String, dynamic>? recipeData;
@@ -55,7 +56,7 @@ class _AIRecipesPageState extends State<AIRecipesPage> {
         throw Exception('No hay token de autenticación');
       }
 
-      final url = Uri.parse('http://192.168.1.5:4000/api/recipes/recommendations?tipo_comida=$selectedMealType');
+      final url = Uri.parse('$baseUrl/recipes/recommendations?tipo_comida=$selectedMealType');
 
       final response = await http.get(
         url,
@@ -79,32 +80,72 @@ class _AIRecipesPageState extends State<AIRecipesPage> {
       if (response.statusCode == 200) {
         if (decodedData['recipes'] != null && decodedData['recipes']['text'] != null) {
           final cleanJsonString = _cleanJsonString(decodedData['recipes']['text']);
-          final recipesJson = json.decode(cleanJsonString);
+          print('JSON limpio: $cleanJsonString'); // Para depuración
           
-          if (recipesJson['recetas_con_ingredientes_disponibles'] != null) {
-            final recetas = recipesJson['recetas_con_ingredientes_disponibles'];
+          try {
+            final recipesJson = json.decode(cleanJsonString);
+            print('JSON decodificado: $recipesJson'); // Para depuración
             
-            final List<Map<String, dynamic>> recetasLimpias = [];
-            for (var receta in recetas) {
-              if (receta is Map<String, dynamic>) {
-                if (receta['ingredientes'] != null) {
-                  if (receta['ingredientes'] is! List) {
-                    receta['ingredientes'] = [receta['ingredientes']];
+            if (recipesJson['recetas_con_ingredientes_disponibles'] != null) {
+              final recetas = recipesJson['recetas_con_ingredientes_disponibles'];
+              print('Recetas obtenidas: $recetas'); // Para depuración
+              
+              final List<Map<String, dynamic>> recetasLimpias = [];
+              for (var receta in recetas) {
+                if (receta is Map<String, dynamic>) {
+                  // Asegurarse de que los ingredientes sean una lista
+                  var ingredientes = receta['ingredientes'];
+                  if (ingredientes != null) {
+                    if (ingredientes is String) {
+                      // Si es un string, convertirlo a lista
+                      ingredientes = ingredientes.split(',').map((e) => e.trim()).toList();
+                    } else if (ingredientes is! List) {
+                      // Si no es una lista, convertirlo a lista con un solo elemento
+                      ingredientes = [ingredientes.toString()];
+                    }
+                    receta['ingredientes'] = ingredientes;
+                  } else {
+                    receta['ingredientes'] = [];
                   }
+                  
+                  // Asegurarse de que la preparación sea una lista
+                  var preparacion = receta['preparacion'];
+                  if (preparacion != null) {
+                    if (preparacion is String) {
+                      // Si es un string, convertirlo a lista
+                      preparacion = preparacion.split('\n').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+                    } else if (preparacion is! List) {
+                      // Si no es una lista, convertirlo a lista con un solo elemento
+                      preparacion = [preparacion.toString()];
+                    }
+                    receta['preparacion'] = preparacion;
+                  } else {
+                    receta['preparacion'] = [];
+                  }
+                  
+                  recetasLimpias.add(receta);
                 }
-                recetasLimpias.add(receta);
               }
+              
+              print('Recetas procesadas: $recetasLimpias'); // Para depuración
+              
+              setState(() {
+                availableRecipes = recetasLimpias;
+                recipeData = decodedData;
+                isLoading = false;
+              });
+            } else {
+              throw Exception('No se encontraron recetas disponibles');
             }
-            
-            setState(() {
-              availableRecipes = recetasLimpias;
-              recipeData = decodedData;
-              isLoading = false;
-            });
+          } catch (e) {
+            print('Error al procesar el JSON: $e');
+            throw Exception('Error al procesar la respuesta: $e');
           }
+        } else {
+          throw Exception('Formato de respuesta inválido');
         }
       } else {
-        throw Exception('Error al obtener la receta');
+        throw Exception('Error al obtener la receta: ${response.statusCode}');
       }
     } catch (e) {
       print('Error detallado: $e');
@@ -113,7 +154,7 @@ class _AIRecipesPageState extends State<AIRecipesPage> {
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error al obtener la receta. Por favor, intenta nuevamente.'),
+          content: Text('Error al obtener la receta: ${e.toString()}'),
           backgroundColor: Colors.red,
           duration: Duration(seconds: 4),
         ),
@@ -232,6 +273,8 @@ class _AIRecipesPageState extends State<AIRecipesPage> {
       itemCount: availableRecipes!.length,
       itemBuilder: (context, index) {
         final recipe = availableRecipes![index];
+        final informacionNutricional = recipe['informacion_nutricional'] as Map<String, dynamic>?;
+        
         return Card(
           elevation: 4,
           margin: EdgeInsets.all(16),
@@ -252,10 +295,58 @@ class _AIRecipesPageState extends State<AIRecipesPage> {
                     color: Verde,
                   ),
                 ),
+                if (recipe['tiempo_preparacion'] != null) ...[
+                  SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(Icons.timer, size: 20),
+                      SizedBox(width: 8),
+                      Text(
+                        'Tiempo de preparación: ${recipe['tiempo_preparacion']}',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                ],
+                if (informacionNutricional != null) ...[
+                  SizedBox(height: 8),
+                  Text(
+                    'Información Nutricional:',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text('Calorías: ${informacionNutricional['calorias']} kcal'),
+                  Text('Proteínas: ${informacionNutricional['proteinas']}g'),
+                  Text('Carbohidratos: ${informacionNutricional['carbohidratos']}g'),
+                  Text('Grasas: ${informacionNutricional['grasas']}g'),
+                ],
                 SizedBox(height: 20),
                 _buildIngredientesSection(recipe['ingredientes']),
                 SizedBox(height: 20),
                 _buildPreparacionSection(recipe['preparacion']),
+                if (recipe['beneficios'] != null) ...[
+                  SizedBox(height: 20),
+                  Text(
+                    'Beneficios:',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: (recipe['beneficios'] as List).map((beneficio) => 
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 2),
+                        child: Text('• $beneficio'),
+                      )
+                    ).toList(),
+                  ),
+                ],
               ],
             ),
           ),
@@ -274,7 +365,6 @@ class _AIRecipesPageState extends State<AIRecipesPage> {
     } else if (ingredientes is Map) {
       ingredientesList = [ingredientes];
     } else if (ingredientes is String) {
-      // Si es un string, dividirlo por comas o saltos de línea
       ingredientesList = ingredientes.split(RegExp(r',|\n')).map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
     }
 
@@ -308,9 +398,10 @@ class _AIRecipesPageState extends State<AIRecipesPage> {
               String textoIngrediente = '';
               
               if (ingrediente is Map) {
-                final nombre = ingrediente['nombre']?.toString() ?? '';
+                // Manejar el nuevo formato de ingredientes
+                final nombreIngrediente = ingrediente['ingrediente']?.toString() ?? ingrediente['nombre']?.toString() ?? '';
                 final cantidad = ingrediente['cantidad']?.toString() ?? '';
-                textoIngrediente = cantidad.isNotEmpty ? '$nombre: $cantidad' : nombre;
+                textoIngrediente = cantidad.isNotEmpty ? '$nombreIngrediente: $cantidad' : nombreIngrediente;
               } else if (ingrediente is String) {
                 textoIngrediente = ingrediente;
               } else {
@@ -329,7 +420,7 @@ class _AIRecipesPageState extends State<AIRecipesPage> {
                   style: TextStyle(fontSize: 16, height: 1.5),
                 ),
               );
-            }).where((widget) => widget is Padding).toList(), // Solo mostrar los ingredientes válidos
+            }).where((widget) => widget is Padding).toList(),
           ),
         ),
       ],
