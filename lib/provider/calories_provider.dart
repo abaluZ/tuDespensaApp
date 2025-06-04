@@ -3,30 +3,37 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:tudespensa/Models/calories_model.dart';
 import 'package:tudespensa/Utils/preferences.dart';
+import '../services/api_service.dart';
 
 class CaloriesProvider with ChangeNotifier {
   final prefs = Preferences();
-  CaloriesModel? caloriesModel;
+  CaloriesModel? _caloriesModel;
+  bool _isLoading = false;
+  String? _errorMessage;
 
-  bool isLoading = false;
-  String? errorMessage;
+  CaloriesModel? get caloriesModel => _caloriesModel;
+  bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
+
+  // Getter para acceder directamente a las calorías
+  CaloriesData? get calories => _caloriesModel?.data;
 
   // URL base del backend
   final String baseUrl = 'http://192.168.0.57:4000/api';
 
   Future<CaloriesModel?> fetchCaloriesData() async {
     print('[CaloriesProvider] Iniciando carga de datos de calorías...');
-    isLoading = true;
-    errorMessage = null;
+    _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
     try {
       final token = prefs.authToken;
 
       if (token.isEmpty) {
-        errorMessage = "Token no encontrado";
+        _errorMessage = "Token no encontrado";
         print("[CaloriesProvider] Error: Token no encontrado");
-        isLoading = false;
+        _isLoading = false;
         notifyListeners();
         return null;
       }
@@ -52,60 +59,60 @@ class CaloriesProvider with ChangeNotifier {
           print('[CaloriesProvider] Respuesta decodificada:');
           print(const JsonEncoder.withIndent('  ').convert(decodedBody));
 
-          caloriesModel = CaloriesModel.fromJson(decodedBody);
+          _caloriesModel = CaloriesModel.fromJson(decodedBody);
           print('[CaloriesProvider] Modelo creado exitosamente');
           print('[CaloriesProvider] Datos cargados:');
-          print('- Mensaje: ${caloriesModel?.message}');
-          print('- Calorías diarias: ${caloriesModel?.data.caloriasDiarias}');
-          print('- TMB: ${caloriesModel?.data.tmb}');
+          print('- Mensaje: ${_caloriesModel?.message}');
+          print('- Calorías diarias: ${_caloriesModel?.data.caloriasDiarias}');
+          print('- TMB: ${_caloriesModel?.data.tmb}');
           print('\nMacronutrientes:');
           print(
-              '- Proteínas: ${caloriesModel?.data.macronutrientes.proteinas}g');
-          print('- Grasas: ${caloriesModel?.data.macronutrientes.grasas}g');
+              '- Proteínas: ${_caloriesModel?.data.macronutrientes.proteinas}g');
+          print('- Grasas: ${_caloriesModel?.data.macronutrientes.grasas}g');
           print(
-              '- Carbohidratos: ${caloriesModel?.data.macronutrientes.carbohidratos}g');
+              '- Carbohidratos: ${_caloriesModel?.data.macronutrientes.carbohidratos}g');
           print('\nDistribución calórica:');
           print(
-              '- Desayuno: ${caloriesModel?.data.distribucionCalorica.desayuno} kcal');
+              '- Desayuno: ${_caloriesModel?.data.distribucionCalorica.desayuno} kcal');
           print(
-              '- Almuerzo: ${caloriesModel?.data.distribucionCalorica.almuerzo} kcal');
+              '- Almuerzo: ${_caloriesModel?.data.distribucionCalorica.almuerzo} kcal');
           print(
-              '- Cena: ${caloriesModel?.data.distribucionCalorica.cena} kcal');
+              '- Cena: ${_caloriesModel?.data.distribucionCalorica.cena} kcal');
           print(
-              '- Meriendas: ${caloriesModel?.data.distribucionCalorica.meriendas} kcal');
+              '- Meriendas: ${_caloriesModel?.data.distribucionCalorica.meriendas} kcal');
 
-          isLoading = false;
+          _isLoading = false;
           notifyListeners();
-          return caloriesModel;
+          return _caloriesModel;
         } catch (e) {
           print("[CaloriesProvider] Error al procesar JSON: $e");
           print("[CaloriesProvider] Respuesta que causó el error:");
           print(response.body);
-          errorMessage = "Error al procesar la respuesta del servidor";
-          isLoading = false;
+          _errorMessage = "Error al procesar la respuesta del servidor";
+          _isLoading = false;
           notifyListeners();
           return null;
         }
       } else if (response.statusCode == 403 || response.statusCode == 401) {
-        errorMessage = "Sesión expirada o no autorizada";
+        _errorMessage = "Sesión expirada o no autorizada";
         print("[CaloriesProvider] Error: Sesión expirada o no autorizada");
-        isLoading = false;
+        _isLoading = false;
         notifyListeners();
         return null;
       } else {
-        errorMessage = "Error del servidor (${response.statusCode})";
+        _errorMessage = "Error del servidor (${response.statusCode})";
         print("[CaloriesProvider] Error del servidor: ${response.statusCode}");
         print("[CaloriesProvider] Respuesta:");
         print(response.body);
-        isLoading = false;
+        _isLoading = false;
         notifyListeners();
         return null;
       }
     } catch (e, stackTrace) {
-      errorMessage = "Error de conexión";
+      _errorMessage = "Error de conexión";
       print("[CaloriesProvider] Error de excepción: $e");
       print("[CaloriesProvider] Stack trace: $stackTrace");
-      isLoading = false;
+      _isLoading = false;
       notifyListeners();
       return null;
     }
@@ -113,7 +120,25 @@ class CaloriesProvider with ChangeNotifier {
 
   void clearCaloriesData() {
     print('[CaloriesProvider] Limpiando datos de calorías');
-    caloriesModel = null;
+    _caloriesModel = null;
     notifyListeners();
+  }
+
+  Future<void> fetchCalories() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final response = await ApiService.getCalories();
+      _caloriesModel = CaloriesModel.fromJson(response);
+      _errorMessage = null;
+    } catch (e) {
+      _errorMessage = e.toString();
+      _caloriesModel = null;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }

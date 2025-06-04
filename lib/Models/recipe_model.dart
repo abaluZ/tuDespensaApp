@@ -23,15 +23,15 @@ class Recipe {
 
   factory Recipe.fromJson(Map<String, dynamic> json) {
     return Recipe(
-      nombre: json['nombre'],
-      categoria: json['categoria'],
-      calorias: int.tryParse(json['calorias'].replaceAll(' kcal', '')) ?? 0,
-      tiempo: json['tiempo'],
-      dificultad: json['dificultad'],
-      imagen: json['imagen'],
-      ingredientes: List<String>.from(json['ingredientes']),
-      pasos: List<String>.from(json['pasos']),
-      descripcion: json['descripcion'],
+      nombre: json['nombre'] ?? 'Sin nombre',
+      categoria: json['categoria'] ?? 'Sin categoría',
+      calorias: int.tryParse((json['calorias'] ?? '0').toString().replaceAll(' kcal', '')) ?? 0,
+      tiempo: json['tiempo'] ?? '0 min',
+      dificultad: json['dificultad'] ?? 'No especificada',
+      imagen: json['imagen'] ?? 'assets/images/recetas/default_recipe.png',
+      ingredientes: List<String>.from(json['ingredientes'] ?? []),
+      pasos: List<String>.from(json['pasos'] ?? []),
+      descripcion: json['descripcion'] ?? 'Sin descripción',
     );
   }
 }

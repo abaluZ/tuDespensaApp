@@ -10,7 +10,7 @@ class CaloriesModel {
   factory CaloriesModel.fromJson(Map<String, dynamic> json) {
     return CaloriesModel(
       message: json['message'] ?? '',
-      data: CaloriesData.fromJson(json['data']),
+      data: CaloriesData.fromJson(json['data'] ?? {}),
     );
   }
 }
@@ -34,11 +34,17 @@ class CaloriesData {
     return CaloriesData(
       caloriasDiarias: json['caloriasDiarias'] ?? 0,
       tmb: json['tmb'] ?? 0,
-      macronutrientes: Macronutrientes.fromJson(json['macronutrientes']),
-      distribucionCalorica: DistribucionCalorica.fromJson(json['distribucionCalorica']),
-      informacionUsuario: InformacionUsuario.fromJson(json['informacionUsuario']),
+      macronutrientes: Macronutrientes.fromJson(json['macronutrientes'] ?? {}),
+      distribucionCalorica: DistribucionCalorica.fromJson(json['distribucionCalorica'] ?? {}),
+      informacionUsuario: InformacionUsuario.fromJson(json['informacionUsuario'] ?? {}),
     );
   }
+
+  // Getters para acceder a las calorías por tipo de comida
+  int get desayuno => distribucionCalorica.desayuno;
+  int get almuerzo => distribucionCalorica.almuerzo;
+  int get cena => distribucionCalorica.cena;
+  int get meriendas => distribucionCalorica.meriendas;
 }
 
 class Macronutrientes {
