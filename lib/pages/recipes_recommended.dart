@@ -70,9 +70,8 @@ class _RecipesRecommendedState extends State<RecipesRecommended> {
   Widget build(BuildContext context) {
     final caloriesProvider = Provider.of<CaloriesProvider>(context);
 
-    Widget body;
     if (_isLoading || caloriesProvider.isLoading) {
-      body = const Scaffold(
+      return const Scaffold(
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -84,8 +83,10 @@ class _RecipesRecommendedState extends State<RecipesRecommended> {
           ),
         ),
       );
-    } else if (caloriesProvider.errorMessage != null) {
-      body = Scaffold(
+    }
+
+    if (caloriesProvider.errorMessage != null) {
+      return Scaffold(
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -107,100 +108,20 @@ class _RecipesRecommendedState extends State<RecipesRecommended> {
           ),
         ),
       );
-    } else if (caloriesProvider.calories == null) {
-      body = const Scaffold(
+    }
+
+    if (caloriesProvider.calories == null) {
+      return const Scaffold(
         body: Center(
           child: Text('No hay datos de calorías disponibles'),
         ),
       );
-    } else {
-      body = Scaffold(
-        appBar: AppBarDespensa(
-          backgroundColor: BackgroundColor,
-          onBack: () => Navigator.pop(context),
-          onAvatarTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => UserPage(),
-              ),
-            );
-          },
-          logoPath: 'assets/images/logo.png',
-          avatarPath: 'assets/images/icon.png',
-        ),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Calorías recomendadas por comida:',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text('Desayuno: ${caloriesProvider.calories?.desayuno ?? 0} kcal'),
-                  Text('Almuerzo: ${caloriesProvider.calories?.almuerzo ?? 0} kcal'),
-                  Text('Cena: ${caloriesProvider.calories?.cena ?? 0} kcal'),
-                ],
-              ),
-            ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  _buildMealTypeButton('Desayuno'),
-                  const SizedBox(width: 8),
-                  _buildMealTypeButton('Almuerzo'),
-                  const SizedBox(width: 8),
-                  _buildMealTypeButton('Cena'),
-                ],
-              ),
-            ),
-            Expanded(
-              child: _filteredRecipes.isEmpty
-                  ? const Center(
-                      child: Text('No hay recetas disponibles para esta categoría'),
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: _filteredRecipes.length,
-                      itemBuilder: (context, index) {
-                        final recipe = _filteredRecipes[index];
-                        return RecipeCard(
-                          image: recipe.imagen,
-                          title: recipe.nombre,
-                          calories: recipe.calorias,
-                          duration: int.tryParse(recipe.tiempo.replaceAll(' min', '')) ?? 0,
-                          difficulty: recipe.dificultad,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => RecipeDetailPage(recipe: recipe),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-            ),
-          ],
-        ),
-      );
     }
+
     return Scaffold(
       appBar: AppBarDespensa(
         backgroundColor: BackgroundColor,
-        onBack: () {
-          Navigator.pop(context);
-        },
+        onBack: () => Navigator.pop(context),
         onAvatarTap: () {
           Navigator.push(
             context,
@@ -227,9 +148,9 @@ class _RecipesRecommendedState extends State<RecipesRecommended> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text('Desayuno: ${calories.desayuno} kcal'),
-                Text('Almuerzo: ${calories.almuerzo} kcal'),
-                Text('Cena: ${calories.cena} kcal'),
+                Text('Desayuno: ${caloriesProvider.calories?.desayuno ?? 0} kcal'),
+                Text('Almuerzo: ${caloriesProvider.calories?.almuerzo ?? 0} kcal'),
+                Text('Cena: ${caloriesProvider.calories?.cena ?? 0} kcal'),
               ],
             ),
           ),
