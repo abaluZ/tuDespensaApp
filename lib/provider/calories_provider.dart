@@ -83,5 +83,3 @@ class CaloriesProvider with ChangeNotifier {
     notifyListeners();
   }
 }
-
-}

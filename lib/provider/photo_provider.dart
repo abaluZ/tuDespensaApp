@@ -187,8 +187,6 @@ class PhotoProvider with ChangeNotifier {
               const SnackBar(
                 content: Text(
                     'Por favor selecciona una imagen en formato JPG, PNG, GIF o WebP'),
-                content: Text(
-                    'Por favor selecciona una imagen en formato JPG, PNG, GIF o WebP'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -234,4 +232,4 @@ class PhotoProvider with ChangeNotifier {
   }
 }
 
-}
+

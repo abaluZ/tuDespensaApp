@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -9,10 +10,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:intl/intl.dart';
 import 'auth_provider.dart';
+import 'reports_provider.dart';
 
 class ShoppingListProvider extends ChangeNotifier {
-  final String baseUrl =
-      'http://192.168.1.5:4000/api'; // ajusta si usas IP local o deploy
+  final String baseUrl = 'http://192.168.1.5:4000/api';
 
   List<ShoppingItem> _shoppingItems = [];
   List<ShoppingListHistory> _historyItems = [];
@@ -44,7 +45,7 @@ class ShoppingListProvider extends ChangeNotifier {
       }
 
       final res = await http.post(
-        Uri.parse('$baseUrl/shopping-list'),
+        Uri.parse('$baseUrl/shopping/list'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -61,7 +62,7 @@ class ShoppingListProvider extends ChangeNotifier {
         print(
             "Lista de compras ${completar ? 'completada' : 'guardada/actualizada'} correctamente");
         if (completar) {
-          _shoppingItems = []; // Limpiar la lista actual si se completó
+          _shoppingItems = [];
           notifyListeners();
         }
         return true;
@@ -89,7 +90,7 @@ class ShoppingListProvider extends ChangeNotifier {
       }
 
       final res = await http.get(
-        Uri.parse('$baseUrl/shopping-list'),
+        Uri.parse('$baseUrl/shopping/list'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -121,50 +122,31 @@ class ShoppingListProvider extends ChangeNotifier {
       {int page = 1, int limit = 10}) async {
     try {
       _setLoading(true);
-      final token =
-          await Provider.of<AuthProvider>(context, listen: false).getToken();
-
-      if (token == null) {
-        print("Token no encontrado");
-        _setLoading(false);
-        return false;
-      }
-
-      final res = await http.get(
-        Uri.parse('$baseUrl/shopping-list/history?page=$page&limit=$limit'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
+      
+      final reportsProvider = Provider.of<ReportsProvider>(context, listen: false);
+      final historyData = await reportsProvider.getShoppingHistory(
+        page: page,
+        limit: limit,
       );
 
-      if (res.statusCode == 200) {
-        final data = jsonDecode(res.body);
-        print("Respuesta del servidor: ${res.body}"); // Debug log
-
-        if (data['historial'] == null) {
-          print("El historial es nulo en la respuesta");
-          _setLoading(false);
-          return false;
-        }
-
+      if (historyData != null) {
         if (page == 1) {
           _historyItems = [];
         }
 
-        final newItems = (data['historial'] as List)
+        final newItems = historyData
             .map((item) => ShoppingListHistory.fromMap(item))
             .toList();
 
         _historyItems.addAll(newItems);
-        _currentPage = data['currentPage'] ?? page;
-        _totalPages = data['totalPages'] ?? 1;
+        _currentPage = page;
+        _totalPages = (historyData.length / limit).ceil();
 
         _setLoading(false);
         notifyListeners();
         return true;
       } else {
-        print("Error al obtener el historial: ${res.body}");
+        print("Error al obtener el historial: ${reportsProvider.errorMessage}");
         _setLoading(false);
         return false;
       }
@@ -214,38 +196,19 @@ class ShoppingListProvider extends ChangeNotifier {
         );
       }
 
-      final token =
-          await Provider.of<AuthProvider>(context, listen: false).getToken();
-
-      if (token == null) {
-        print("Token no encontrado");
-        return;
-      }
-
-      final queryParams = {
-        'startDate': startDate.toIso8601String().split('T')[0],
-        'endDate': endDate.toIso8601String().split('T')[0],
-        'limit': limit.toString(),
-      };
-
-      final uri = Uri.parse('$baseUrl/reports/shopping/most-bought')
-          .replace(queryParameters: queryParams);
-
-      final res = await http.get(
-        uri,
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Accept': 'application/octet-stream',
-        },
+      final reportsProvider = Provider.of<ReportsProvider>(context, listen: false);
+      final reportData = await reportsProvider.getMostBoughtReport(
+        startDate: startDate,
+        endDate: endDate,
+        limit: limit,
       );
 
-      if (res.statusCode == 200) {
-        final data = jsonDecode(res.body);
+      if (reportData != null) {
         if (context.mounted) {
-          _showReportDialog(context, data, startDate, endDate);
+          _showReportDialog(context, reportData, startDate, endDate);
         }
       } else {
-        print("Error al obtener el reporte: ${res.body}");
+        print("Error al obtener el reporte: ${reportsProvider.errorMessage}");
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -261,125 +224,6 @@ class ShoppingListProvider extends ChangeNotifier {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Error al generar el reporte'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
-
-  Future<void> _downloadAndOpenPDF(
-      BuildContext context, DateTime startDate, DateTime endDate) async {
-    try {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Generando reporte PDF...'),
-            backgroundColor: Colors.blue,
-          ),
-        );
-      }
-
-      final token =
-          await Provider.of<AuthProvider>(context, listen: false).getToken();
-      if (token == null) return;
-
-      final queryParams = {
-        'startDate': startDate.toIso8601String().split('T')[0],
-        'endDate': endDate.toIso8601String().split('T')[0],
-      };
-
-      final uri = Uri.parse('$baseUrl/reports/shopping/history/report')
-          .replace(queryParameters: queryParams);
-
-      print('Intentando descargar PDF desde: $uri');
-
-      final res = await http.get(
-        uri,
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Accept': 'application/pdf',
-        },
-      );
-
-      print('Respuesta del servidor:');
-      print('Status code: ${res.statusCode}');
-      print('Headers: ${res.headers}');
-      print('Content-Type: ${res.headers['content-type']}');
-
-      if (res.statusCode == 200) {
-        // Verificar si recibimos datos binarios
-        if (res.headers['content-type']?.contains('application/pdf') == true ||
-            res.headers['content-type']?.contains('application/octet-stream') ==
-                true ||
-            res.headers['content-disposition']?.contains('attachment') ==
-                true) {
-          final directory = await getApplicationDocumentsDirectory();
-          final dateStr = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-          final fileName = 'reporte_productos_$dateStr.pdf';
-          final filePath = '${directory.path}/$fileName';
-
-          print('Guardando PDF en: $filePath');
-          print('Tamaño del archivo: ${res.bodyBytes.length} bytes');
-
-          final file = File(filePath);
-          await file.writeAsBytes(res.bodyBytes);
-
-          print('PDF guardado, intentando abrir...');
-
-          if (context.mounted) {
-            final result = await OpenFile.open(filePath);
-            print(
-                'Resultado de abrir archivo: ${result.type} - ${result.message}');
-
-            if (result.type == ResultType.done) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Reporte PDF generado con éxito'),
-                  backgroundColor: Colors.green,
-                ),
-              );
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Error al abrir el archivo: ${result.message}'),
-                  backgroundColor: Colors.red,
-                ),
-              );
-            }
-          }
-        } else {
-          // Si recibimos JSON en lugar de PDF, probablemente sea un mensaje de error
-          final errorData = jsonDecode(res.body);
-          throw Exception(
-              errorData['message'] ?? 'Error desconocido al generar el PDF');
-        }
-      } else {
-        print('Error: El servidor no devolvió un PDF válido');
-        print('Content-Type recibido: ${res.headers['content-type']}');
-
-        if (context.mounted) {
-          String errorMessage = 'Error al descargar el PDF\n';
-          if (res.headers['content-type']?.contains('application/json') ==
-              true) {
-            final errorData = jsonDecode(res.body);
-            errorMessage += errorData['message'] ?? 'Error desconocido';
-          }
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMessage),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      print("Error detallado al descargar PDF: $e");
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error al descargar el PDF: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -457,18 +301,362 @@ class ShoppingListProvider extends ChangeNotifier {
             onPressed: () => Navigator.pop(context),
             child: const Text('Cerrar'),
           ),
-          TextButton.icon(
-            onPressed: () {
-              _downloadAndOpenPDF(context, startDate, endDate);
-            },
-            icon: const Icon(Icons.picture_as_pdf),
-            label: const Text('Descargar PDF'),
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.green,
-            ),
-          ),
         ],
       ),
     );
+  }
+
+  void showMostBoughtReport(BuildContext context) async {
+    final reportsProvider = Provider.of<ReportsProvider>(context, listen: false);
+    final now = DateTime.now();
+    final startDate = now.subtract(const Duration(days: 7));
+    final endDate = now;
+
+    final report = await reportsProvider.getMostBoughtReport(
+      startDate: startDate,
+      endDate: endDate,
+    );
+
+    if (report != null) {
+      // ignore: use_build_context_synchronously
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Logo y título
+                Center(
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        'assets/images/logo.png',
+                        height: 60,
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Reporte de Compras',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // Tipo de reporte y período
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.blue[50],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Tipo de Reporte: ${report['reportType']}',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.blue[700],
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Estadísticas Generales
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Estadísticas Generales',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.blue[700],
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Total de listas analizadas: ${report['totalLists'] ?? 0}',
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                      Text(
+                        'Total de productos únicos: ${report['uniqueProducts'] ?? 0}',
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // Productos más comprados
+                Text(
+                  'Productos Más Comprados',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.blue[700],
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ...List.generate(
+                  (report['products'] as List? ?? []).length,
+                  (index) {
+                    final product = (report['products'] as List)[index];
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.grey[200]!),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '${index + 1}. ${product['name']}',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue[100],
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  'Veces: ${product['count']}',
+                                  style: TextStyle(
+                                    color: Colors.blue[700],
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (product['category'] != null) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              'Categoría: ${product['category']}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 20),
+                // Gráfico de frecuencia
+                Text(
+                  'Gráfico de Frecuencia de Compras',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.blue[700],
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ..._buildFrequencyBars(report['products'] as List? ?? []),
+                const SizedBox(height: 16),
+                // Fecha de generación
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    'Reporte generado el: ${DateFormat('dd/MM/yyyy').format(DateTime.now())}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton.icon(
+              onPressed: () async {
+                final filePath = await downloadMostBoughtReportPDF(
+                  context,
+                  startDate: startDate,
+                  endDate: endDate,
+                );
+                if (filePath != null) {
+                  await OpenFile.open(filePath);
+                }
+              },
+              icon: const Icon(Icons.download),
+              label: const Text('Descargar PDF'),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.blue[700],
+              ),
+            ),
+            TextButton.icon(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: const Icon(Icons.close),
+              label: const Text('Cerrar'),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.grey[700],
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error al generar el reporte'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  List<Widget> _buildFrequencyBars(List products) {
+    final maxCount = products.isEmpty
+        ? 1
+        : (products.map((p) => p['count'] as int).reduce(max)).toDouble();
+
+    return products.map((product) {
+      final count = (product['count'] as int).toDouble();
+      return Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    product['name'],
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ),
+                Expanded(
+                  flex: 7,
+                  child: Stack(
+                    children: [
+                      Container(
+                        height: 20,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      FractionallySizedBox(
+                        widthFactor: count / maxCount,
+                        child: Container(
+                          height: 20,
+                          decoration: BoxDecoration(
+                            color: Colors.blue[400],
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '(${count.toInt()})',
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }).toList();
+  }
+
+  Future<String?> downloadMostBoughtReportPDF(
+    BuildContext context, {
+    required DateTime startDate,
+    required DateTime endDate,
+    int limit = 10,
+  }) async {
+    try {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Descargando reporte PDF...'),
+            backgroundColor: Colors.blue,
+          ),
+        );
+      }
+
+      final reportsProvider = Provider.of<ReportsProvider>(context, listen: false);
+      final filePath = await reportsProvider.downloadMostBoughtReportPDF(
+        startDate: startDate,
+        endDate: endDate,
+        limit: limit,
+      );
+
+      if (filePath != null) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Reporte PDF descargado correctamente'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+        return filePath;
+      } else {
+        print("Error al descargar el reporte PDF: ${reportsProvider.errorMessage}");
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Error al descargar el reporte PDF'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return null;
+      }
+    } catch (e) {
+      print("Error en downloadMostBoughtReportPDF: $e");
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error al descargar el reporte PDF'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return null;
+    }
   }
 }
