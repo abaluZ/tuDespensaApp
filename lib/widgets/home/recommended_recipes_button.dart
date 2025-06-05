@@ -55,7 +55,7 @@ class RecetasRecomendadasButton extends StatelessWidget {
                         ),
                         SizedBox(width: 12),
                         Text(
-                          'Recetas Recomendadas',
+                          'Recetas',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 24,
