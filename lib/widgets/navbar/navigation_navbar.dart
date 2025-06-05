@@ -128,15 +128,17 @@ class NavigationNavbar extends StatelessWidget {
 
   bool _isCurrentRoute(BuildContext context, String label) {
     final String currentRoute = ModalRoute.of(context)?.settings.name ?? '';
+    final String currentPath = context.widget.toString();
+    
     switch (label.toLowerCase()) {
       case 'inicio':
-        return currentRoute.isEmpty || currentRoute == '/';
+        return currentPath.contains('HomePage');
       case 'lista':
-        return currentRoute == '/shopping';
+        return currentPath.contains('ShoppingPage');
       case 'favoritos':
-        return currentRoute == '/favorites';
+        return currentPath.contains('FavoritesPage');
       case 'ajustes':
-        return currentRoute == '/settings';
+        return currentPath.contains('AjustesPage');
       default:
         return false;
     }

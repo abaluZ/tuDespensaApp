@@ -10,6 +10,7 @@ import 'package:tudespensa/widgets/information/banner_page.dart';
 import 'package:tudespensa/widgets/shopping/shopping_item_list.dart';
 import 'package:tudespensa/widgets/shopping/show_dialog_add.dart';
 import 'package:tudespensa/widgets/reports/most_bought_report_button.dart';
+import 'package:tudespensa/widgets/navbar/navigation_navbar.dart';
 
 class ShoppingPage extends StatefulWidget {
   const ShoppingPage({super.key});
@@ -69,6 +70,7 @@ class _ShoppingPageState extends State<ShoppingPage> {
         logoPath: 'assets/images/logo.png',
         avatarPath: 'assets/images/icon.png',
       ),
+      bottomNavigationBar: NavigationNavbar(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 30),
         child: Column(

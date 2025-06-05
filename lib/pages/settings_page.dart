@@ -8,15 +8,52 @@ import 'package:tudespensa/pages/account_page.dart';
 import 'package:tudespensa/pages/user_page.dart';
 import 'package:tudespensa/pages/goalPageV.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:tudespensa/widgets/navbar/navigation_navbar.dart';
 
 class AjustesPage extends StatelessWidget {
   const AjustesPage({super.key});
 
-  Future<void> _launchURL(String url) async {
-    final Uri uri = Uri.parse(url);
-    if (!await launchUrl(uri)) {
-      throw Exception('No se pudo abrir $url');
-    }
+  Widget _buildSettingsCard({
+    required String title,
+    required IconData icon,
+    required VoidCallback onTap,
+    Color? iconColor,
+    Widget? trailing,
+  }) {
+    return Card(
+      elevation: 2,
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: ListTile(
+        onTap: onTap,
+        leading: Container(
+          padding: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: (iconColor ?? PrimaryColor).withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            icon,
+            color: iconColor ?? PrimaryColor,
+            size: 24,
+          ),
+        ),
+        title: Text(
+          title,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        trailing: trailing ?? Icon(
+          Icons.arrow_forward_ios_rounded,
+          size: 18,
+          color: Colors.grey,
+        ),
+      ),
+    );
   }
 
   @override
@@ -39,152 +76,66 @@ class AjustesPage extends StatelessWidget {
         avatarPath: 'assets/images/icon.png',
         titleText: 'Ajustes',
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      bottomNavigationBar: NavigationNavbar(),
+      body: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Card(
-                color: Naranja,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25),
+            Padding(
+              padding: EdgeInsets.all(24),
+              child: Text(
+                'Configuración',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
                 ),
-                child: Container(
-                  width: 400,
-                  height: 500,
-                  margin: EdgeInsets.all(5),
-                  child: Padding(
-                    padding: const EdgeInsets.all(25.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 255,
-                          height: 45,
-                          margin: EdgeInsets.all(1),
-                          child: ElevatedButton(
-                            style: ButtonStyle(
-                              backgroundColor: WidgetStateColor.transparent,
-                              shadowColor: WidgetStateColor.transparent,
-                            ),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const CuentaPage(),
-                                ),
-                              );
-                            },
-                            child: Row(
-                              children: [
-                                SvgIcon(
-                                  'assets/icons/cuenta.svg',
-                                  size: 25,
-                                  color: Colors.black,
-                                ),
-                                SizedBox(width: 10),
-                                Text(
-                                  'Cuenta',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 15),
-                        Container(
-                          width: 255,
-                          height: 45,
-                          margin: EdgeInsets.all(1),
-                          child: ElevatedButton(
-                            style: ButtonStyle(
-                              backgroundColor: WidgetStateColor.transparent,
-                              shadowColor: WidgetStateColor.transparent,
-                            ),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const UserPage(),
-                                ),
-                              );
-                            },
-                            child: Row(
-                              children: [
-                                SvgIcon(
-                                  'assets/icons/perfil.svg',
-                                  size: 25,
-                                  color: Colors.black,
-                                ),
-                                SizedBox(width: 10),
-                                Text(
-                                  'Perfil',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 15),
-                        Container(
-                          width: 255,
-                          height: 45,
-                          margin: EdgeInsets.all(1),
-                          child: ElevatedButton(
-                            style: ButtonStyle(
-                              backgroundColor: WidgetStateColor.transparent,
-                              shadowColor: WidgetStateColor.transparent,
-                            ),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const Goalpagev(),
-                                ),
-                              );
-                            },
-                            child: Row(
-                              children: [
-                                SvgIcon(
-                                  'assets/icons/objetivo.svg',
-                                  size: 25,
-                                  color: Colors.black,
-                                ),
-                                SizedBox(width: 10),
-                                Text(
-                                  'Mi Objetivo',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 15),
-                        Container(
-                          width: 255,
-                          height: 45,
-                          margin: EdgeInsets.all(1),
-                          child: ElevatedButton(
-                            style: ButtonStyle(
-                              backgroundColor: WidgetStateColor.transparent,
-                              shadowColor: WidgetStateColor.transparent,
-                            ),
-                            onPressed: () {
+              ),
+            ),
+            _buildSettingsCard(
+              title: 'Cuenta',
+              icon: Icons.account_circle_rounded,
+              iconColor: Colors.blue,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CuentaPage(),
+                  ),
+                );
+              },
+            ),
+            _buildSettingsCard(
+              title: 'Perfil',
+              icon: Icons.person_rounded,
+              iconColor: Colors.green,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const UserPage(),
+                  ),
+                );
+              },
+            ),
+            _buildSettingsCard(
+              title: 'Mi Objetivo',
+              icon: Icons.track_changes_rounded,
+              iconColor: Colors.orange,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Goalpagev(),
+                  ),
+                );
+              },
+            ),
+            _buildSettingsCard(
+              title: 'Premium',
+              icon: Icons.star_rounded,
+              iconColor: Colors.amber,
+              onTap: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -192,104 +143,55 @@ class AjustesPage extends StatelessWidget {
                                 ),
                               );
                             },
-                            child: Row(
-                              children: [
-                                SvgIcon(
-                                  'assets/icons/premium.svg',
-                                  size: 25,
-                                  color: Colors.black,
-                                ),
-                                SizedBox(width: 10),
-                                Text(
-                                  'Premium',
+              trailing: Container(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.amber.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  'PRO',
                                   style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black,
+                    color: Colors.amber[800],
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 15),
-                        Container(
-                          width: 255,
-                          height: 45,
-                          margin: EdgeInsets.all(1),
-                          child: ElevatedButton(
-                            style: ButtonStyle(
-                              backgroundColor: WidgetStateColor.transparent,
-                              shadowColor: WidgetStateColor.transparent,
-                            ),
-                            onPressed: () {
-                              // Por ahora dejamos vacío el sitio web hasta tener el link
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Sitio web en construcción'),
-                                  duration: Duration(seconds: 2),
-                                ),
-                              );
-                            },
-                            child: Row(
-                              children: [
-                                SvgIcon(
-                                  'assets/icons/pagina-web.svg',
-                                  size: 25,
-                                  color: Colors.black,
-                                ),
-                                SizedBox(width: 10),
-                                Text(
-                                  'Sitio Web',
+              ),
+            ),
+            SizedBox(height: 16),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              child: Text(
+                'Más información',
                                   style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black,
+                  fontSize: 20,
                                     fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 15),
-                        Container(
-                          width: 255,
-                          height: 45,
-                          margin: EdgeInsets.all(1),
-                          child: ElevatedButton(
-                            style: ButtonStyle(
-                              backgroundColor: WidgetStateColor.transparent,
-                              shadowColor: WidgetStateColor.transparent,
-                            ),
-                            onPressed: () {
-                              _launchURL('https://los-kollingas.netlify.app/');
-                            },
-                            child: Row(
-                              children: [
-                                SvgIcon(
-                                  'assets/icons/cuenta.svg',
-                                  size: 25,
-                                  color: Colors.black,
-                                ),
-                                SizedBox(width: 10),
-                                Text(
-                                  'Pagina de la Empresa',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  color: Colors.black87,
                 ),
               ),
-            )
+            ),
+            _buildSettingsCard(
+              title: 'Sitio Web',
+              icon: Icons.language_rounded,
+              iconColor: Colors.purple,
+              onTap: () async {
+                final Uri url = Uri.parse('https://tudespensa.com');
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url);
+                }
+              },
+            ),
+            _buildSettingsCard(
+              title: 'Página de la Empresa',
+              icon: Icons.business_rounded,
+              iconColor: Colors.indigo,
+              onTap: () async {
+                final Uri url = Uri.parse('https://empresa.tudespensa.com');
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url);
+                }
+              },
+            ),
           ],
         ),
       ),
