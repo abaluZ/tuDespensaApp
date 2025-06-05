@@ -13,6 +13,13 @@ import 'package:tudespensa/widgets/navbar/navigation_navbar.dart';
 class AjustesPage extends StatelessWidget {
   const AjustesPage({super.key});
 
+  Future<void> _launchURL(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      throw Exception('No se pudo abrir $url');
+    }
+  }
+
   Widget _buildSettingsCard({
     required String title,
     required IconData icon,
@@ -136,13 +143,13 @@ class AjustesPage extends StatelessWidget {
               icon: Icons.star_rounded,
               iconColor: Colors.amber,
               onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => PremiumPage(),
-                                ),
-                              );
-                            },
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PremiumPage(),
+                  ),
+                );
+              },
               trailing: Container(
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
@@ -151,11 +158,11 @@ class AjustesPage extends StatelessWidget {
                 ),
                 child: Text(
                   'PRO',
-                                  style: TextStyle(
+                  style: TextStyle(
                     color: Colors.amber[800],
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
             SizedBox(height: 16),
@@ -163,9 +170,9 @@ class AjustesPage extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
               child: Text(
                 'Más información',
-                                  style: TextStyle(
+                style: TextStyle(
                   fontSize: 20,
-                                    fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.bold,
                   color: Colors.black87,
                 ),
               ),
@@ -186,10 +193,34 @@ class AjustesPage extends StatelessWidget {
               icon: Icons.business_rounded,
               iconColor: Colors.indigo,
               onTap: () async {
-                final Uri url = Uri.parse('https://empresa.tudespensa.com');
-                if (await canLaunchUrl(url)) {
-                  await launchUrl(url);
+                try {
+                  await _launchURL('https://los-kollingas.netlify.app/');
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('No se pudo abrir la página: $e'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
                 }
+              },
+            ),
+            _buildSettingsCard(
+              title: 'Términos y condiciones',
+              icon: Icons.description_rounded,
+              iconColor: Colors.purple,
+              onTap: () {
+                // TODO: Implementar navegación a términos y condiciones
+              },
+            ),
+            _buildSettingsCard(
+              title: 'Política de privacidad',
+              icon: Icons.privacy_tip_rounded,
+              iconColor: Colors.indigo,
+              onTap: () {
+                // TODO: Implementar navegación a política de privacidad
               },
             ),
           ],
