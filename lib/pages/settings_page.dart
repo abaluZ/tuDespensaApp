@@ -4,9 +4,20 @@ import 'package:tudespensa/icon_personalizado.dart';
 import 'package:tudespensa/pages/home_page.dart';
 import 'package:tudespensa/pages/premium_page.dart';
 import 'package:tudespensa/widgets/appBarV.dart';
+import 'package:tudespensa/pages/account_page.dart';
+import 'package:tudespensa/pages/user_page.dart';
+import 'package:tudespensa/pages/goalPageV.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AjustesPage extends StatelessWidget {
   const AjustesPage({super.key});
+
+  Future<void> _launchURL(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (!await launchUrl(uri)) {
+      throw Exception('No se pudo abrir $url');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +70,14 @@ class AjustesPage extends StatelessWidget {
                               backgroundColor: WidgetStateColor.transparent,
                               shadowColor: WidgetStateColor.transparent,
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const CuentaPage(),
+                                ),
+                              );
+                            },
                             child: Row(
                               children: [
                                 SvgIcon(
@@ -90,7 +108,14 @@ class AjustesPage extends StatelessWidget {
                               backgroundColor: WidgetStateColor.transparent,
                               shadowColor: WidgetStateColor.transparent,
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const UserPage(),
+                                ),
+                              );
+                            },
                             child: Row(
                               children: [
                                 SvgIcon(
@@ -121,7 +146,14 @@ class AjustesPage extends StatelessWidget {
                               backgroundColor: WidgetStateColor.transparent,
                               shadowColor: WidgetStateColor.transparent,
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const Goalpagev(),
+                                ),
+                              );
+                            },
                             child: Row(
                               children: [
                                 SvgIcon(
@@ -190,7 +222,15 @@ class AjustesPage extends StatelessWidget {
                               backgroundColor: WidgetStateColor.transparent,
                               shadowColor: WidgetStateColor.transparent,
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              // Por ahora dejamos vacío el sitio web hasta tener el link
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Sitio web en construcción'),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            },
                             child: Row(
                               children: [
                                 SvgIcon(
@@ -221,7 +261,9 @@ class AjustesPage extends StatelessWidget {
                               backgroundColor: WidgetStateColor.transparent,
                               shadowColor: WidgetStateColor.transparent,
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              _launchURL('https://los-kollingas.netlify.app/');
+                            },
                             child: Row(
                               children: [
                                 SvgIcon(

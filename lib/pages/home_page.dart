@@ -43,7 +43,7 @@ class _HomePageState extends State<HomePage> {
             'Error al cargar los datos iniciales: ${e.toString()}',
             style: TextStyle(fontSize: 16),
           ),
-          backgroundColor: Colors.red,
+          backgroundColor: ErrorColor,
           duration: Duration(seconds: 3),
         ),
       );
@@ -54,10 +54,17 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: NavigationNavbar(),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(vertical: 30),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [BackgroundColor, Colors.white],
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -65,114 +72,136 @@ class _HomePageState extends State<HomePage> {
                 HeaderHome(),
 
                 // Saludo con username desde ProfileProvider
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 24),
                   child: Consumer<ProfileProvider>(
                     builder: (context, profileProvider, child) {
                       if (profileProvider.isLoading) {
-                        return const Text('Cargando...');
+                        return const Center(child: CircularProgressIndicator());
                       } else {
-                        return Text(
-                          'Bienvenido,  ${profileProvider.userModel?.username}',
-                          style: TextStyle(color: Naranja, fontSize: 30),
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Bienvenido,',
+                              style: TextStyle(
+                                color: TextSecondaryColor,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Text(
+                              '${profileProvider.userModel?.username}',
+                              style: TextStyle(
+                                color: PrimaryColor,
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         );
                       }
                     },
                   ),
                 ),
 
-                const SizedBox(height: 15),
-                // Mostrar mensaje de carga o error
+                // Estado de calorías
                 Consumer<CaloriesProvider>(
                   builder: (context, caloriesProvider, child) {
                     if (caloriesProvider.isLoading) {
-                      return const CircularProgressIndicator();
+                      return const Center(child: CircularProgressIndicator());
                     } else if (caloriesProvider.errorMessage != null) {
-                      return Text(
-                        'Error: ${caloriesProvider.errorMessage}',
-                        style: TextStyle(color: Colors.red),
+                      return Container(
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: ErrorColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          'Error: ${caloriesProvider.errorMessage}',
+                          style: TextStyle(color: ErrorColor),
+                        ),
                       );
                     } else if (caloriesProvider.caloriesModel != null) {
-                      print(
-                          'Desayuno: ${caloriesProvider.caloriesModel!.data.distribucionCalorica.desayuno} kcal');
-                      print(
-                          'Almuerzo: ${caloriesProvider.caloriesModel!.data.distribucionCalorica.almuerzo} kcal');
-                      print(
-                          'Cena: ${caloriesProvider.caloriesModel!.data.distribucionCalorica.cena} kcal');
                       return const SizedBox.shrink();
                     } else {
-                      return const Text('No hay datos de calorías disponibles');
+                      return const SizedBox.shrink();
                     }
                   },
                 ),
 
-                const SizedBox(height: 25),
+                const SizedBox(height: 24),
 
-                // Recetas recomendadas
-                RecetasRecomendadasButton(
-                  onTap: () async {
-                    try {
-                      final caloriesProvider =
-                          Provider.of<CaloriesProvider>(context, listen: false);
-                      
-                      setState(() => _isLoading = true);
-                      
-                      if (caloriesProvider.caloriesModel == null) {
-                        await caloriesProvider.fetchCaloriesData();
-                      }
+                // Recetas recomendadas con nuevo diseño
+                Container(
+                  margin: EdgeInsets.only(bottom: 24),
+                  child: RecetasRecomendadasButton(
+                    onTap: () async {
+                      try {
+                        final caloriesProvider =
+                            Provider.of<CaloriesProvider>(context, listen: false);
+                        
+                        setState(() => _isLoading = true);
+                        
+                        if (caloriesProvider.caloriesModel == null) {
+                          await caloriesProvider.fetchCaloriesData();
+                        }
 
-                      if (!mounted) return;
-                      setState(() => _isLoading = false);
-
-                      if (caloriesProvider.caloriesModel != null) {
                         if (!mounted) return;
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const RecipesRecommended(),
-                          ),
-                        );
-                      } else {
+                        setState(() => _isLoading = false);
+
+                        if (caloriesProvider.caloriesModel != null) {
+                          if (!mounted) return;
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const RecipesRecommended(),
+                            ),
+                          );
+                        } else {
+                          if (!mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'No se pudieron cargar los datos de calorías. Por favor, intenta nuevamente.',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              backgroundColor: ErrorColor,
+                              duration: Duration(seconds: 3),
+                            ),
+                          );
+                        }
+                      } catch (e) {
                         if (!mounted) return;
+                        setState(() => _isLoading = false);
+                        
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
+                          SnackBar(
                             content: Text(
-                              'No se pudieron cargar los datos de calorías. Por favor, intenta nuevamente.',
+                              'Error al cargar los datos: ${e.toString()}',
                               style: TextStyle(fontSize: 16),
                             ),
-                            backgroundColor: Colors.red,
+                            backgroundColor: ErrorColor,
                             duration: Duration(seconds: 3),
                           ),
                         );
                       }
-                    } catch (e) {
-                      if (!mounted) return;
-                      setState(() => _isLoading = false);
-                      
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Error al cargar los datos: ${e.toString()}',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          backgroundColor: Colors.red,
-                          duration: Duration(seconds: 3),
-                        ),
-                      );
-                    }
-                  },
+                    },
+                  ),
                 ),
 
-                const SizedBox(height: 25),
-
-                // Botones principales 1
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                // Grid de botones principales con nuevo diseño
+                GridView.count(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
                   children: [
-                    ImageButton(
-                      imagePath: 'assets/images/objetivoButton.png',
-                      label: 'Objetivo',
-                      onTap: () async {
+                    _buildFeatureCard(
+                      'Objetivo',
+                      'assets/images/objetivoButton.png',
+                      () async {
                         final caloriesProvider = context.read<CaloriesProvider>();
                         await caloriesProvider.fetchCaloriesData();
                         if (context.mounted) {
@@ -185,11 +214,10 @@ class _HomePageState extends State<HomePage> {
                         }
                       },
                     ),
-                    const SizedBox(width: 15),
-                    ImageButton(
-                      imagePath: 'assets/images/recetasButton.png',
-                      label: 'Recetas IA',
-                      onTap: () {
+                    _buildFeatureCard(
+                      'Recetas IA',
+                      'assets/images/recetasButton.png',
+                      () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -198,19 +226,10 @@ class _HomePageState extends State<HomePage> {
                         );
                       },
                     ),
-                  ],
-                ),
-
-                const SizedBox(height: 15),
-
-                // Botones principales 2
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ImageButton(
-                      imagePath: 'assets/images/despensabutton.png',
-                      label: 'Despensa',
-                      onTap: () {
+                    _buildFeatureCard(
+                      'Mi Despensa',
+                      'assets/images/despensabutton.png',
+                      () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -219,29 +238,68 @@ class _HomePageState extends State<HomePage> {
                         );
                       },
                     ),
-                    const SizedBox(width: 15),
-                    ImageButton(
-                      imagePath: 'assets/images/historialButton.png',
-                      label: 'Historial',
-                      onTap: () {},
+                    _buildFeatureCard(
+                      'Historial',
+                      'assets/images/historialButton.png',
+                      () {
+                        // TODO: Implementar navegación al historial
+                      },
                     ),
                   ],
                 ),
-
-                const SizedBox(height: 15),
               ],
             ),
           ),
-          if (_isLoading)
-            Container(
-              width: double.infinity,
-              height: double.infinity,
-              color: Colors.black.withOpacity(0.3),
-              child: const Center(
-                child: CircularProgressIndicator(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFeatureCard(String title, String imagePath, VoidCallback onTap) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: title == 'Objetivo' ? PrimaryGradient : SecondaryGradient,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Image.asset(
+                    imagePath,
+                    height: 80,
+                    width: 80,
+                    fit: BoxFit.contain,
+                  ),
+                ),
               ),
-            ),
-        ],
+              SizedBox(height: 12),
+              Text(
+                title,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

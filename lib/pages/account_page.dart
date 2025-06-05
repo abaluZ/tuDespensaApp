@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tudespensa/constants.dart';
 import 'package:tudespensa/pages/home_page.dart';
+import 'package:tudespensa/pages/wellcome_page.dart';
+import 'package:tudespensa/provider/auth_provider.dart';
 import 'package:tudespensa/provider/profile_provider.dart';
 import 'package:tudespensa/widgets/appBarV.dart';
 import 'package:tudespensa/widgets/user/profile_field_input.dart';
@@ -88,17 +90,21 @@ class CuentaPage extends StatelessWidget {
                           ),
                           SizedBox(height: 20),
                           TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const HomePage()),
-                              );
+                            onPressed: () async {
+                              final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                              await authProvider.logout();
+                              if (context.mounted) {
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const WellcomePage()),
+                                  (route) => false,
+                                );
+                              }
                             },
                             child: Text(
-                              'Salir',
+                              'Cerrar Sesión',
                               style:
-                                  TextStyle(fontSize: 24, color: Colors.black),
+                                  TextStyle(fontSize: 24, color: Colors.red),
                             ),
                           )
                         ],

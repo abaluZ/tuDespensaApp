@@ -155,4 +155,10 @@ class AuthProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear(); // Limpia todas las preferencias
+    notifyListeners();
+  }
 }
