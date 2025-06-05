@@ -5,7 +5,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '480 kcal',
     'tiempo': '90 min',
     'dificultad': 'Media',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/saltenas.jpg',
+    'imagen': 'assets/images/recetas/saltenas.jpg',
     'ingredientes': [
       '500g de carne de res picada',
       '1 taza de cebolla picada',
@@ -27,7 +27,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '700 kcal',
     'tiempo': '45 min',
     'dificultad': 'Media',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/silpancho.jpg',
+    'imagen': 'assets/images/recetas/silpancho.jpg',
     'ingredientes': [
       '1 filete de carne de res aplanado',
       '2 papas',
@@ -50,7 +50,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '550 kcal',
     'tiempo': '40 min',
     'dificultad': 'Media',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/majadito.jpg',
+    'imagen': 'assets/images/recetas/majadito.jpg',
     'ingredientes': [
       '2 tazas de arroz',
       '1/2 taza de charque desmenuzado o carne',
@@ -73,7 +73,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '600 kcal',
     'tiempo': '30 min',
     'dificultad': 'Fácil',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/espaguetis-al-pesto.jpg',
+    'imagen': 'assets/images/recetas/espaguetis-al-pesto.jpg',
     'ingredientes': [
       '200g de spaghetti',
       '2 tazas de hojas de albahaca',
@@ -95,7 +95,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '350 kcal',
     'tiempo': '15 min',
     'dificultad': 'Fácil',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/tostadas-huevo-tomate.jpg',
+    'imagen': 'assets/images/recetas/tostadas-huevo-tomate.jpg',
     'ingredientes': [
       '2 rebanadas de pan',
       '2 huevos',
@@ -115,7 +115,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '200 kcal',
     'tiempo': '10 min',
     'dificultad': 'Fácil',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/ensalada-de-frutas.jpg',
+    'imagen': 'assets/images/recetas/ensalada-de-frutas.jpg',
     'ingredientes': [
       '1 manzana',
       '1 pera',
@@ -137,7 +137,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '300 kcal',
     'tiempo': '5 min',
     'dificultad': 'Fácil',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/avena-leche-frutas.jpg',
+    'imagen': 'assets/images/recetas/avena-leche-frutas.jpg',
     'ingredientes': [
       '1/2 taza de avena',
       '1 taza de leche',
@@ -158,7 +158,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '300 kcal',
     'tiempo': '60 min',
     'dificultad': 'Media',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/sopa-de-pollo.jpg',
+    'imagen': 'assets/images/recetas/sopa-de-pollo.jpg',
     'ingredientes': [
       '1 pechuga de pollo',
       '2 papas',
@@ -183,7 +183,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '450 kcal',
     'tiempo': '45 min',
     'dificultad': 'Media',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/arroz-con-pollo.jpg',
+    'imagen': 'assets/images/recetas/arroz-con-pollo.jpg',
     'ingredientes': [
       '2 tazas de arroz',
       '2 pechugas de pollo',
@@ -208,7 +208,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '400 kcal',
     'tiempo': '20 min',
     'dificultad': 'Fácil',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/ensalada-cesar.jpg',
+    'imagen': 'assets/images/recetas/ensalada-cesar.jpg',
     'ingredientes': [
       '2 pechugas de pollo',
       '1 cabeza de lechuga romana',
@@ -230,7 +230,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '500 kcal',
     'tiempo': '45 min',
     'dificultad': 'Media',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/pizza-casera.jpg',
+    'imagen': 'assets/images/recetas/pizza-casera.jpg',
     'ingredientes': [
       '1 base de pizza',
       '1 taza de salsa de tomate',
@@ -252,7 +252,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '350 kcal',
     'tiempo': '30 min',
     'dificultad': 'Media',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/tacos-al-pastor.jpg',
+    'imagen': 'assets/images/recetas/tacos-al-pastor.jpg',
     'ingredientes': [
       '500g de carne de cerdo',
       '1 piña',
@@ -276,7 +276,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '550 kcal',
     'tiempo': '20 min',
     'dificultad': 'Fácil',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/pasta-a-la-carbonara.jpg',
+    'imagen': 'assets/images/recetas/pasta-a-la-carbonara.jpg',
     'ingredientes': [
       '200g de spaghetti',
       '100g de panceta',
@@ -298,7 +298,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '400 kcal',
     'tiempo': '30 min',
     'dificultad': 'Media',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/pollo-al-curry.jpg',
+    'imagen': 'assets/images/recetas/pollo-al-curry.jpg',
     'ingredientes': [
       '2 pechugas de pollo',
       '1 cebolla',
@@ -322,7 +322,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '300 kcal',
     'tiempo': '10 min',
     'dificultad': 'Fácil',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/ensalada-de-atun.jpg',
+    'imagen': 'assets/images/recetas/ensalada-de-atun.jpg',
     'ingredientes': [
       '1 lata de atún en agua',
       '1 taza de lechuga picada',
@@ -344,7 +344,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '350 kcal',
     'tiempo': '5 min',
     'dificultad': 'Fácil',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/sandwich-de-pavo.jpg',
+    'imagen': 'assets/images/recetas/sandwich-de-pavo.jpg',
     'ingredientes': [
       '2 rebanadas de pan',
       '2 rebanadas de pavo',
@@ -365,7 +365,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '300 kcal',
     'tiempo': '45 min',
     'dificultad': 'Media',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/sopa-de-lentejas.jpg',
+    'imagen': 'assets/images/recetas/sopa-de-lentejas.jpg',
     'ingredientes': [
       '1 taza de lentejas',
       '1 cebolla',
@@ -388,7 +388,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '400 kcal',
     'tiempo': '30 min',
     'dificultad': 'Fácil',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/arroz-con-frijoles.jpg',
+    'imagen': 'assets/images/recetas/arroz-con-frijoles.jpg',
     'ingredientes': [
       '2 tazas de arroz',
       '1 lata de frijoles',
@@ -410,7 +410,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '400 kcal',
     'tiempo': '25 min',
     'dificultad': 'Media',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/tacos-de-carne-asada.jpg',
+    'imagen': 'assets/images/recetas/tacos-de-carne-asada.jpg',
     'ingredientes': [
       '500g de carne de res',
       '1 cebolla',
@@ -433,7 +433,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '300 kcal',
     'tiempo': '30 min',
     'dificultad': 'Fácil',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/pescado-al-horno.jpg',
+    'imagen': 'assets/images/recetas/pescado-al-horno.jpg',
     'ingredientes': [
       '2 filetes de pescado blanco',
       '1 limón',
@@ -459,7 +459,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '380 kcal',
     'tiempo': '25 min',
     'dificultad': 'Fácil',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/panquequesfcon-frutas.jpg',
+    'imagen': 'assets/images/recetas/panquequesfcon-frutas.jpg',
     'ingredientes': [
       '1 taza de harina',
       '1 huevo',
@@ -482,7 +482,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '250 kcal',
     'tiempo': '5 min',
     'dificultad': 'Muy Fácil',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/batido-de-frutas.jpg',
+    'imagen': 'assets/images/recetas/batido-de-frutas.jpg',
     'ingredientes': [
       '1 plátano',
       '1/2 taza de frutos rojos congelados',
@@ -502,7 +502,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '420 kcal',
     'tiempo': '20 min',
     'dificultad': 'Media',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/huevos-rancheros.jpg',
+    'imagen': 'assets/images/recetas/huevos-rancheros.jpg',
     'ingredientes': [
       '2 tortillas de maíz',
       '2 huevos',
@@ -526,7 +526,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '320 kcal',
     'tiempo': '5 min',
     'dificultad': 'Muy Fácil',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/yogur-con-granola-y-frutas.jpg',
+    'imagen': 'assets/images/recetas/yogur-con-granola-y-frutas.jpg',
     'ingredientes': [
       '1 taza de yogur natural',
       '1/2 taza de granola',
@@ -546,7 +546,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '450 kcal',
     'tiempo': '20 min',
     'dificultad': 'Fácil',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/burrito-de-desayuno.jpg',
+    'imagen': 'assets/images/recetas/burrito-de-desayuno.jpg',
     'ingredientes': [
       '1 tortilla de trigo grande',
       '2 huevos revueltos',
@@ -569,8 +569,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '280 kcal',
     'tiempo': '10 min',
     'dificultad': 'Muy Fácil',
-    'imagen':
-        '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/cafe-leche-tostadas.jpg',
+    'imagen': 'assets/images/recetas/cafe-leche-tostadas.jpg',
     'ingredientes': [
       '2 rebanadas de pan',
       '2 cucharadas de mermelada',
@@ -593,7 +592,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '650 kcal',
     'tiempo': '35 min',
     'dificultad': 'Media',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/lomo-saltado.jpg',
+    'imagen': 'assets/images/recetas/lomo-saltado.jpg',
     'ingredientes': [
       '500g de lomo de res en tiras',
       '1 cebolla morada en juliana',
@@ -620,7 +619,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '400 kcal',
     'tiempo': '20 min',
     'dificultad': 'Fácil',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/ensalada-de-pollo-y-aguacate.jpg',
+    'imagen': 'assets/images/recetas/ensalada-de-pollo-y-aguacate.jpg',
     'ingredientes': [
       '200g de pechuga de pollo cocida y desmenuzada',
       '1 aguacate en cubos',
@@ -643,7 +642,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '500 kcal',
     'tiempo': '40 min',
     'dificultad': 'Media',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/milanesa-de-pollo-con-pure.jpg',
+    'imagen': 'assets/images/recetas/milanesa-de-pollo-con-pure.jpg',
     'ingredientes': [
       '2 filetes de pechuga de pollo',
       'Pan rallado',
@@ -666,7 +665,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '380 kcal',
     'tiempo': '30 min',
     'dificultad': 'Fácil',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/curry-de-garbanzos-y-espinacas.jpg',
+    'imagen': 'assets/images/recetas/curry-de-garbanzos-y-espinacas.jpg',
     'ingredientes': [
       '1 lata de garbanzos cocidos',
       '2 tazas de espinacas frescas',
@@ -691,7 +690,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '450 kcal',
     'tiempo': '60 min',
     'dificultad': 'Media',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/sopa-de-mani.jpg',
+    'imagen': 'assets/images/recetas/sopa-de-mani.jpg',
     'ingredientes': [
       '200g de maní pelado y tostado',
       '250g de carne de res o pollo',
@@ -718,7 +717,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '600 kcal',
     'tiempo': '25 min',
     'dificultad': 'Fácil',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/fetuccini-alfredo.jpg',
+    'imagen': 'assets/images/recetas/fetuccini-alfredo.jpg',
     'ingredientes': [
       '250g de fetuccini',
       '100g de mantequilla sin sal',
@@ -744,7 +743,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '250 kcal',
     'tiempo': '30 min',
     'dificultad': 'Fácil',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/sopa-de-tomate-y-albahaca.jpg',
+    'imagen': 'assets/images/recetas/sopa-de-tomate-y-albahaca.jpg',
     'ingredientes': [
       '1 kg de tomates maduros',
       '1 cebolla',
@@ -769,7 +768,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '380 kcal',
     'tiempo': '25 min',
     'dificultad': 'Fácil',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/brochetas-de-pollo-y-verduras.jpg',
+    'imagen': 'assets/images/recetas/brochetas-de-pollo-y-verduras.jpg',
     'ingredientes': [
       '2 pechugas de pollo en cubos',
       '1 pimiento de cada color (rojo, verde, amarillo)',
@@ -792,7 +791,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '280 kcal',
     'tiempo': '10 min',
     'dificultad': 'Muy Fácil',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/ensalada-caprese.jpg',
+    'imagen': 'assets/images/recetas/ensalada-caprese.jpg',
     'ingredientes': [
       '2 tomates grandes maduros',
       '200g de mozzarella fresca (bocconcini o en rebanadas)',
@@ -815,7 +814,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '200 kcal',
     'tiempo': '15 min',
     'dificultad': 'Fácil',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/omelette-de-verduras.jpg',
+    'imagen': 'assets/images/recetas/omelette-de-verduras.jpg',
     'ingredientes': [
       '2 huevos',
       '1/4 taza de leche',
@@ -841,7 +840,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '380 kcal',
     'tiempo': '10 min',
     'dificultad': 'Muy Fácil',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/sandwich-de-queso-la_parrilla.jpg',
+    'imagen': 'assets/images/recetas/sandwich-de-queso-la_parrilla.jpg',
     'ingredientes': [
       '2 rebanadas de pan de molde',
       '2 rebanadas de queso (cheddar, mozzarella, etc.)',
@@ -861,7 +860,7 @@ final List<Map<String, dynamic>> recipes = [
     'calorias': '180 kcal',
     'tiempo': '40 min',
     'dificultad': 'Fácil',
-    'imagen': '/home/baluz/tuDespensa/tudespensa/assets/images/recetas/sopa-de-verduras-mixtas.jpg',
+    'imagen': 'assets/images/recetas/sopa-de-verduras-mixtas.jpg',
     'ingredientes': [
       '1 zanahoria en cubos',
       '1 papa en cubos',

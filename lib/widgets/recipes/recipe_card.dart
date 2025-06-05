@@ -19,100 +19,151 @@ class RecipeCard extends StatelessWidget {
     final isFavorite = favoritesProvider.isFavorite(recipe);
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFFEFF7FF), // fondo celeste claro
-        borderRadius: BorderRadius.circular(20),
+        color: const Color(0xFFEFF7FF),
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 1,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            // Imagen con bordes redondeados
-            ClipRRect(
-              borderRadius: BorderRadius.circular(15),
-              child: SizedBox(
-                width: 120,
-                height: 120,
-                child: Image.asset(
-                  recipe.imagen,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Image.asset(
-                      '/assets/images/recetas/default_recipe.png',
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(15),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Imagen con bordes redondeados
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                    ),
+                    child: Image.asset(
+                      recipe.imagen,
                       fit: BoxFit.cover,
-                    );
-                  },
-                ),
-              ),
-            ),
-
-            const SizedBox(width: 12),
-
-            // Contenido a la derecha
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          recipe.nombre,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                      errorBuilder: (context, error, stackTrace) {
+                        print('Error cargando imagen: ${recipe.imagen}');
+                        print('Error detallado: $error');
+                        return Container(
+                          color: Colors.grey[300],
+                          child: const Icon(
+                            Icons.restaurant,
+                            size: 40,
+                            color: Colors.grey,
                           ),
-                        ),
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          isFavorite ? Icons.favorite : Icons.favorite_border,
-                          color: isFavorite ? Colors.red : Colors.grey,
-                        ),
-                        onPressed: () {
-                          favoritesProvider.toggleFavorite(recipe);
-                        },
-                      ),
-                    ],
+                        );
+                      },
+                    ),
                   ),
-                  const SizedBox(height: 8),
-                  Row(
+                ),
+
+                const SizedBox(width: 12),
+
+                // Contenido a la derecha
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.local_fire_department, size: 18),
-                      const SizedBox(width: 4),
-                      Text('${recipe.calorias} kcal'),
-                      const SizedBox(width: 12),
-                      const Icon(Icons.timer, size: 18),
-                      const SizedBox(width: 4),
-                      Text(recipe.tiempo),
-                      const SizedBox(width: 12),
-                      const Icon(Icons.restaurant_menu, size: 18),
-                      const SizedBox(width: 4),
-                      Text(recipe.dificultad),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      TextButton(
-                        onPressed: onTap,
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text("Ver receta"),
-                            SizedBox(width: 5),
-                            Icon(Icons.arrow_circle_right, size: 20),
-                          ],
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              recipe.nombre,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              isFavorite ? Icons.favorite : Icons.favorite_border,
+                              color: isFavorite ? Colors.red : Colors.grey,
+                              size: 22,
+                            ),
+                            constraints: const BoxConstraints(
+                              minWidth: 30,
+                              minHeight: 30,
+                            ),
+                            padding: EdgeInsets.zero,
+                            onPressed: () {
+                              favoritesProvider.toggleFavorite(recipe);
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(Icons.local_fire_department, size: 16, color: Colors.orange[700]),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${recipe.calorias} kcal',
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                          const SizedBox(width: 12),
+                          const Icon(Icons.timer, size: 16),
+                          const SizedBox(width: 4),
+                          Text(
+                            recipe.tiempo,
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(Icons.restaurant_menu, size: 16),
+                          const SizedBox(width: 4),
+                          Text(
+                            recipe.dificultad,
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                          const Spacer(),
+                          TextButton(
+                            onPressed: onTap,
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  "Ver receta",
+                                  style: TextStyle(fontSize: 13),
+                                ),
+                                SizedBox(width: 4),
+                                Icon(Icons.arrow_forward, size: 16),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
