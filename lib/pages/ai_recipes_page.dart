@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:tudespensa/Utils/preferences.dart';
 import 'package:tudespensa/pages/despensa_page.dart';
+import 'package:tudespensa/pages/home_page.dart';
 
 class AIRecipesPage extends StatefulWidget {
   const AIRecipesPage({super.key});
@@ -472,7 +473,13 @@ class _AIRecipesPageState extends State<AIRecipesPage> {
     return Scaffold(
       appBar: AppBarDespensa(
         backgroundColor: BackgroundColor,
-        onBack: () => Navigator.pop(context),
+        onBack: () {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const HomePage()),
+            (route) => false,
+          );
+        },
         onAvatarTap: () {},
         logoPath: 'assets/images/logo.png',
         avatarPath: 'assets/images/icon.png',

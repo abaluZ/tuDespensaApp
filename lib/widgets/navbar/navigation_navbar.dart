@@ -4,6 +4,7 @@ import 'package:tudespensa/constants.dart';
 import 'package:tudespensa/pages/settings_page.dart';
 import 'package:tudespensa/pages/shopping_page.dart';
 import 'package:tudespensa/pages/favorites_page.dart';
+import 'package:tudespensa/pages/home_page.dart';
 
 class NavigationNavbar extends StatelessWidget {
   const NavigationNavbar({super.key});
@@ -34,7 +35,13 @@ class NavigationNavbar extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildIconButton('assets/icons/home.svg', () {}),
+            _buildIconButton('assets/icons/home.svg', () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const HomePage()),
+                (route) => false,
+              );
+            }),
             _buildIconButton('assets/icons/carrito-compras.svg', () {
               Navigator.push(
                 context,
