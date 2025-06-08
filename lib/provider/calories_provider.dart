@@ -19,7 +19,7 @@ class CaloriesProvider with ChangeNotifier {
   CaloriesData? get calories => _caloriesModel?.data;
 
   // URL base del backend
-  final String baseUrl = 'http://192.168.1.5:4000/api';
+  final String baseUrl = 'http://192.168.1.4:4000/api';
 
   Future<CaloriesModel?> fetchCaloriesData() async {
     if (_isLoading) return _caloriesModel;

@@ -17,7 +17,7 @@ class AIRecipesPage extends StatefulWidget {
 
 class _AIRecipesPageState extends State<AIRecipesPage> {
   final prefs = Preferences();
-  final String baseUrl = 'http://192.168.1.5:4000/api';
+  final String baseUrl = 'http://192.168.1.4:4000/api';
   String? selectedMealType;
   bool isLoading = false;
   Map<String, dynamic>? recipeData;

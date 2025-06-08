@@ -11,7 +11,7 @@ class ReportsProvider with ChangeNotifier {
   final prefs = Preferences();
   bool isLoading = false;
   String? errorMessage;
-  final String baseUrl = 'http://192.168.1.5:4000/api';
+  final String baseUrl = 'http://192.168.1.4:4000/api';
 
   Future<String?> downloadReport() async {
     isLoading = true;
