@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../Utils/preferences.dart';
 
 class ApiService {
-  static final String baseUrl = 'http://192.168.1.4:4000/api';
+  static final String baseUrl = 'http://192.168.1.5:4000/api';
   static final prefs = Preferences();
 
   static Future<Map<String, dynamic>> getCalories() async {

@@ -17,11 +17,12 @@ class AIRecipesPage extends StatefulWidget {
 
 class _AIRecipesPageState extends State<AIRecipesPage> {
   final prefs = Preferences();
-  final String baseUrl = 'http://192.168.1.4:4000/api';
+  final String baseUrl = 'http://192.168.1.5:4000/api';
   String? selectedMealType;
   bool isLoading = false;
   Map<String, dynamic>? recipeData;
   List<Map<String, dynamic>>? availableRecipes;
+  List<Map<String, dynamic>>? complementRecipes;
 
   @override
   void initState() {
@@ -49,6 +50,7 @@ class _AIRecipesPageState extends State<AIRecipesPage> {
       isLoading = true;
       recipeData = null;
       availableRecipes = null;
+      complementRecipes = null;
     });
 
     try {
@@ -98,32 +100,26 @@ class _AIRecipesPageState extends State<AIRecipesPage> {
                   var ingredientes = receta['ingredientes'];
                   if (ingredientes != null) {
                     if (ingredientes is String) {
-                      // Si es un string, convertirlo a lista
                       ingredientes = ingredientes.split(',').map((e) => e.trim()).toList();
                     } else if (ingredientes is! List) {
-                      // Si no es una lista, convertirlo a lista con un solo elemento
                       ingredientes = [ingredientes.toString()];
                     }
                     receta['ingredientes'] = ingredientes;
                   } else {
                     receta['ingredientes'] = [];
                   }
-                  
                   // Asegurarse de que la preparación sea una lista
                   var preparacion = receta['preparacion'];
                   if (preparacion != null) {
                     if (preparacion is String) {
-                      // Si es un string, convertirlo a lista
                       preparacion = preparacion.split('\n').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
                     } else if (preparacion is! List) {
-                      // Si no es una lista, convertirlo a lista con un solo elemento
                       preparacion = [preparacion.toString()];
                     }
                     receta['preparacion'] = preparacion;
                   } else {
                     receta['preparacion'] = [];
                   }
-                  
                   recetasLimpias.add(receta);
               }
             }
@@ -138,6 +134,57 @@ class _AIRecipesPageState extends State<AIRecipesPage> {
             } else {
               throw Exception('No se encontraron recetas disponibles');
             }
+
+            // Procesar recetas con complementos
+            if (recipesJson['recetas_con_complementos'] != null) {
+              final complementos = recipesJson['recetas_con_complementos'];
+              final List<Map<String, dynamic>> complementosLimpios = [];
+              for (var receta in complementos) {
+                if (receta is Map<String, dynamic>) {
+                  // Normalizar ingredientes disponibles
+                  var disponibles = receta['ingredientes_disponibles'];
+                  if (disponibles != null) {
+                    if (disponibles is String) {
+                      disponibles = disponibles.split(',').map((e) => e.trim()).toList();
+                    } else if (disponibles is! List) {
+                      disponibles = [disponibles.toString()];
+                    }
+                    receta['ingredientes_disponibles'] = disponibles;
+                  } else {
+                    receta['ingredientes_disponibles'] = [];
+                  }
+                  // Normalizar ingredientes a comprar
+                  var aComprar = receta['ingredientes_a_comprar'];
+                  if (aComprar != null) {
+                    if (aComprar is String) {
+                      aComprar = aComprar.split(',').map((e) => e.trim()).toList();
+                    } else if (aComprar is! List) {
+                      aComprar = [aComprar.toString()];
+                    }
+                    receta['ingredientes_a_comprar'] = aComprar;
+                  } else {
+                    receta['ingredientes_a_comprar'] = [];
+                  }
+                  // Normalizar preparación
+                  var preparacion = receta['preparacion'];
+                  if (preparacion != null) {
+                    if (preparacion is String) {
+                      preparacion = preparacion.split('\n').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+                    } else if (preparacion is! List) {
+                      preparacion = [preparacion.toString()];
+                    }
+                    receta['preparacion'] = preparacion;
+                  } else {
+                    receta['preparacion'] = [];
+                  }
+                  complementosLimpios.add(receta);
+                }
+              }
+              setState(() {
+                complementRecipes = complementosLimpios;
+              });
+            }
+
           } catch (e) {
             print('Error al procesar el JSON: $e');
             throw Exception('Error al procesar la respuesta: $e');
@@ -295,6 +342,8 @@ class _AIRecipesPageState extends State<AIRecipesPage> {
                     fontWeight: FontWeight.bold,
                     color: Verde,
                   ),
+                  softWrap: true,
+                  overflow: TextOverflow.visible,
                 ),
                 if (recipe['tiempo_preparacion'] != null) ...[
                   SizedBox(height: 8),
@@ -302,9 +351,13 @@ class _AIRecipesPageState extends State<AIRecipesPage> {
                     children: [
                       Icon(Icons.timer, size: 20),
                       SizedBox(width: 8),
-                      Text(
-                        'Tiempo de preparación: ${recipe['tiempo_preparacion']}',
-                        style: TextStyle(fontSize: 16),
+                      Flexible(
+                        child: Text(
+                          'Tiempo de preparación: ${recipe['tiempo_preparacion']}',
+                          style: TextStyle(fontSize: 16),
+                          softWrap: true,
+                          overflow: TextOverflow.visible,
+                        ),
                       ),
                     ],
                   ),
@@ -468,6 +521,123 @@ class _AIRecipesPageState extends State<AIRecipesPage> {
     );
   }
 
+  Widget _buildComplementRecipesSection() {
+    if (complementRecipes == null || complementRecipes!.isEmpty) {
+      return SizedBox();
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Text(
+            'Recetas que puedes hacer si compras estos ingredientes',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.deepOrange,
+            ),
+          ),
+        ),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: complementRecipes!.length,
+          itemBuilder: (context, index) {
+            final recipe = complementRecipes![index];
+            final infoNutri = recipe['informacion_nutricional'] as Map<String, dynamic>?;
+            return Card(
+              elevation: 4,
+              margin: EdgeInsets.all(16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      recipe['nombre'] ?? 'Sin nombre',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepOrange,
+                      ),
+                      softWrap: true,
+                      overflow: TextOverflow.visible,
+                    ),
+                    if (recipe['tiempo_preparacion'] != null) ...[
+                      SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Icon(Icons.timer, size: 20),
+                          SizedBox(width: 8),
+                          Flexible(
+                            child: Text(
+                              'Tiempo de preparación: ${recipe['tiempo_preparacion']}',
+                              style: TextStyle(fontSize: 16),
+                              softWrap: true,
+                              overflow: TextOverflow.visible,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                    if (infoNutri != null) ...[
+                      SizedBox(height: 8),
+                      Text(
+                        'Información Nutricional:',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text('Calorías: ${infoNutri['calorias']} kcal'),
+                      Text('Proteínas: ${infoNutri['proteinas']}g'),
+                      Text('Carbohidratos: ${infoNutri['carbohidratos']}g'),
+                      Text('Grasas: ${infoNutri['grasas']}g'),
+                    ],
+                    SizedBox(height: 20),
+                    Text('Ingredientes que ya tienes:', style: TextStyle(fontWeight: FontWeight.bold)),
+                    _buildIngredientesSection(recipe['ingredientes_disponibles']),
+                    SizedBox(height: 10),
+                    Text('Ingredientes que debes comprar:', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
+                    _buildIngredientesSection(recipe['ingredientes_a_comprar']),
+                    SizedBox(height: 20),
+                    _buildPreparacionSection(recipe['preparacion']),
+                    if (recipe['beneficios'] != null) ...[
+                      SizedBox(height: 20),
+                      Text(
+                        'Beneficios:',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: (recipe['beneficios'] as List).map((beneficio) => 
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 2),
+                            child: Text('• $beneficio'),
+                          )
+                        ).toList(),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -561,7 +731,12 @@ class _AIRecipesPageState extends State<AIRecipesPage> {
                 ),
               )
             else
-              _buildRecipeCard(),
+              Column(
+                children: [
+                  _buildRecipeCard(),
+                  _buildComplementRecipesSection(),
+                ],
+              ),
           ],
         ),
       ),

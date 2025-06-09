@@ -12,7 +12,7 @@ import 'auth_provider.dart';
 import 'reports_provider.dart';
 
 class ShoppingListProvider extends ChangeNotifier {
-  final String baseUrl = 'http://192.168.1.4:4000/api';
+  final String baseUrl = 'http://192.168.1.5:4000/api';
 
   List<ShoppingItem> _shoppingItems = [];
   List<ShoppingListHistory> _historyItems = [];

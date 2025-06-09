@@ -10,7 +10,7 @@ enum DietType {
 
 class TypeDietProvider extends ChangeNotifier {
   final prefs = Preferences();
-  static const String _baseUrl = 'http://192.168.1.4:4000/api';
+  static const String _baseUrl = 'http://192.168.1.5:4000/api';
 
   DietType? _selectedDiet;
   bool _hasSavedDiet = false;
