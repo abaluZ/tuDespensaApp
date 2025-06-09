@@ -11,6 +11,8 @@ import 'package:tudespensa/widgets/home/image_button.dart';
 import 'package:tudespensa/widgets/navbar/navigation_navbar.dart';
 import 'package:tudespensa/widgets/home/recommended_recipes_button.dart';
 import 'package:tudespensa/provider/calories_provider.dart';
+import 'package:tudespensa/pages/shopping_history_page.dart';
+import 'package:tudespensa/pages/ai_recipes_history_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -242,7 +244,12 @@ class _HomePageState extends State<HomePage> {
                       'Historial',
                       'assets/images/historialButton.png',
                       () {
-                        // TODO: Implementar navegación al historial
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AIRecipesHistoryPage(),
+                          ),
+                        );
                       },
                     ),
                   ],

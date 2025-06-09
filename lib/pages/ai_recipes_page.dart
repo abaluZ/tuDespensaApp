@@ -81,113 +81,96 @@ class _AIRecipesPageState extends State<AIRecipesPage> {
       }
 
       if (response.statusCode == 200) {
-        if (decodedData['recipes'] != null && decodedData['recipes']['text'] != null) {
-          final cleanJsonString = _cleanJsonString(decodedData['recipes']['text']);
-          print('JSON limpio: $cleanJsonString'); // Para depuración
-          
-          try {
-          final recipesJson = json.decode(cleanJsonString);
-            print('JSON decodificado: $recipesJson'); // Para depuración
-          
-          if (recipesJson['recetas_con_ingredientes_disponibles'] != null) {
-            final recetas = recipesJson['recetas_con_ingredientes_disponibles'];
-              print('Recetas obtenidas: $recetas'); // Para depuración
-            
+        if (decodedData['recipes'] != null &&
+            (decodedData['recipes']['recetas_con_ingredientes_disponibles'] != null ||
+             decodedData['recipes']['recetas_con_complementos'] != null)) {
+          // Procesar recetas con ingredientes disponibles
+          if (decodedData['recipes']['recetas_con_ingredientes_disponibles'] != null) {
+            final recetas = decodedData['recipes']['recetas_con_ingredientes_disponibles'];
             final List<Map<String, dynamic>> recetasLimpias = [];
             for (var receta in recetas) {
               if (receta is Map<String, dynamic>) {
-                  // Asegurarse de que los ingredientes sean una lista
-                  var ingredientes = receta['ingredientes'];
-                  if (ingredientes != null) {
-                    if (ingredientes is String) {
-                      ingredientes = ingredientes.split(',').map((e) => e.trim()).toList();
-                    } else if (ingredientes is! List) {
-                      ingredientes = [ingredientes.toString()];
-                    }
-                    receta['ingredientes'] = ingredientes;
-                  } else {
-                    receta['ingredientes'] = [];
+                // Asegurarse de que los ingredientes sean una lista
+                var ingredientes = receta['ingredientes'];
+                if (ingredientes != null) {
+                  if (ingredientes is String) {
+                    ingredientes = ingredientes.split(',').map((e) => e.trim()).toList();
+                  } else if (ingredientes is! List) {
+                    ingredientes = [ingredientes.toString()];
                   }
-                  // Asegurarse de que la preparación sea una lista
-                  var preparacion = receta['preparacion'];
-                  if (preparacion != null) {
-                    if (preparacion is String) {
-                      preparacion = preparacion.split('\n').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
-                    } else if (preparacion is! List) {
-                      preparacion = [preparacion.toString()];
-                    }
-                    receta['preparacion'] = preparacion;
-                  } else {
-                    receta['preparacion'] = [];
+                  receta['ingredientes'] = ingredientes;
+                } else {
+                  receta['ingredientes'] = [];
+                }
+                // Asegurarse de que la preparación sea una lista
+                var preparacion = receta['preparacion'];
+                if (preparacion != null) {
+                  if (preparacion is String) {
+                    preparacion = preparacion.split('\n').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+                  } else if (preparacion is! List) {
+                    preparacion = [preparacion.toString()];
                   }
-                  recetasLimpias.add(receta);
+                  receta['preparacion'] = preparacion;
+                } else {
+                  receta['preparacion'] = [];
+                }
+                recetasLimpias.add(receta);
               }
             }
-              
-              print('Recetas procesadas: $recetasLimpias'); // Para depuración
-            
             setState(() {
               availableRecipes = recetasLimpias;
               recipeData = decodedData;
               isLoading = false;
             });
-            } else {
-              throw Exception('No se encontraron recetas disponibles');
-            }
-
-            // Procesar recetas con complementos
-            if (recipesJson['recetas_con_complementos'] != null) {
-              final complementos = recipesJson['recetas_con_complementos'];
-              final List<Map<String, dynamic>> complementosLimpios = [];
-              for (var receta in complementos) {
-                if (receta is Map<String, dynamic>) {
-                  // Normalizar ingredientes disponibles
-                  var disponibles = receta['ingredientes_disponibles'];
-                  if (disponibles != null) {
-                    if (disponibles is String) {
-                      disponibles = disponibles.split(',').map((e) => e.trim()).toList();
-                    } else if (disponibles is! List) {
-                      disponibles = [disponibles.toString()];
-                    }
-                    receta['ingredientes_disponibles'] = disponibles;
-                  } else {
-                    receta['ingredientes_disponibles'] = [];
+          }
+          // Procesar recetas con complementos
+          if (decodedData['recipes']['recetas_con_complementos'] != null) {
+            final complementos = decodedData['recipes']['recetas_con_complementos'];
+            final List<Map<String, dynamic>> complementosLimpios = [];
+            for (var receta in complementos) {
+              if (receta is Map<String, dynamic>) {
+                // Normalizar ingredientes disponibles
+                var disponibles = receta['ingredientes_disponibles'];
+                if (disponibles != null) {
+                  if (disponibles is String) {
+                    disponibles = disponibles.split(',').map((e) => e.trim()).toList();
+                  } else if (disponibles is! List) {
+                    disponibles = [disponibles.toString()];
                   }
-                  // Normalizar ingredientes a comprar
-                  var aComprar = receta['ingredientes_a_comprar'];
-                  if (aComprar != null) {
-                    if (aComprar is String) {
-                      aComprar = aComprar.split(',').map((e) => e.trim()).toList();
-                    } else if (aComprar is! List) {
-                      aComprar = [aComprar.toString()];
-                    }
-                    receta['ingredientes_a_comprar'] = aComprar;
-                  } else {
-                    receta['ingredientes_a_comprar'] = [];
-                  }
-                  // Normalizar preparación
-                  var preparacion = receta['preparacion'];
-                  if (preparacion != null) {
-                    if (preparacion is String) {
-                      preparacion = preparacion.split('\n').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
-                    } else if (preparacion is! List) {
-                      preparacion = [preparacion.toString()];
-                    }
-                    receta['preparacion'] = preparacion;
-                  } else {
-                    receta['preparacion'] = [];
-                  }
-                  complementosLimpios.add(receta);
+                  receta['ingredientes_disponibles'] = disponibles;
+                } else {
+                  receta['ingredientes_disponibles'] = [];
                 }
+                // Normalizar ingredientes a comprar
+                var aComprar = receta['ingredientes_a_comprar'];
+                if (aComprar != null) {
+                  if (aComprar is String) {
+                    aComprar = aComprar.split(',').map((e) => e.trim()).toList();
+                  } else if (aComprar is! List) {
+                    aComprar = [aComprar.toString()];
+                  }
+                  receta['ingredientes_a_comprar'] = aComprar;
+                } else {
+                  receta['ingredientes_a_comprar'] = [];
+                }
+                // Normalizar preparación
+                var preparacion = receta['preparacion'];
+                if (preparacion != null) {
+                  if (preparacion is String) {
+                    preparacion = preparacion.split('\n').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+                  } else if (preparacion is! List) {
+                    preparacion = [preparacion.toString()];
+                  }
+                  receta['preparacion'] = preparacion;
+                } else {
+                  receta['preparacion'] = [];
+                }
+                complementosLimpios.add(receta);
               }
-              setState(() {
-                complementRecipes = complementosLimpios;
-              });
             }
-
-          } catch (e) {
-            print('Error al procesar el JSON: $e');
-            throw Exception('Error al procesar la respuesta: $e');
+            setState(() {
+              complementRecipes = complementosLimpios;
+            });
           }
         } else {
           throw Exception('Formato de respuesta inválido');

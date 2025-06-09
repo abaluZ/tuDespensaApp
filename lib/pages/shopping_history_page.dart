@@ -6,6 +6,11 @@ import 'package:tudespensa/constants.dart';
 import 'package:intl/intl.dart';
 import 'package:tudespensa/pages/user_page.dart';
 import 'package:tudespensa/widgets/reports/most_bought_report_button.dart';
+import 'package:tudespensa/pages/recipe_detail_page.dart';
+import 'package:tudespensa/Utils/preferences.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:tudespensa/Models/recipe_model.dart';
 
 class ShoppingHistoryPage extends StatefulWidget {
   const ShoppingHistoryPage({Key? key}) : super(key: key);
@@ -16,6 +21,16 @@ class ShoppingHistoryPage extends StatefulWidget {
 
 class _ShoppingHistoryPageState extends State<ShoppingHistoryPage> {
   final ScrollController _scrollController = ScrollController();
+  final prefs = Preferences();
+  final String baseUrl = 'http://192.168.1.5:4000/api';
+  String selectedMealType = 'desayuno';
+  Map<String, List<dynamic>> historial = {
+    'desayuno': [],
+    'almuerzo': [],
+    'cena': [],
+    'postre': [],
+  };
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -41,6 +56,40 @@ class _ShoppingHistoryPageState extends State<ShoppingHistoryPage> {
       await provider.fetchShoppingListHistory(
         context,
         page: provider.currentPage + 1,
+      );
+    }
+  }
+
+  Future<void> fetchHistory() async {
+    setState(() => isLoading = true);
+    try {
+      final token = prefs.authToken;
+      final url = Uri.parse('$baseUrl/recipes/history');
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+      if (response.statusCode == 200) {
+        final decoded = json.decode(response.body);
+        setState(() {
+          historial = Map<String, List<dynamic>>.from(
+            decoded['historial'].map((k, v) => MapEntry(k, List<dynamic>.from(v)))
+          );
+          isLoading = false;
+        });
+      } else {
+        setState(() => isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al cargar el historial')),
+        );
+      }
+    } catch (e) {
+      setState(() => isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
       );
     }
   }
@@ -149,5 +198,52 @@ class _ShoppingHistoryPageState extends State<ShoppingHistoryPage> {
   void dispose() {
     _scrollController.dispose();
     super.dispose();
+  }
+
+  Widget _buildMealTypeButton(String value, String label) {
+    final isSelected = selectedMealType == value;
+    return Expanded(
+      child: ElevatedButton(
+        onPressed: () {
+          setState(() {
+            selectedMealType = value;
+          });
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isSelected ? Colors.blue : Colors.grey[300],
+          foregroundColor: isSelected ? Colors.white : Colors.black,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 0,
+        ),
+        child: Text(label),
+      ),
+    );
+  }
+
+  // Convierte el mapa de receta del historial a un modelo compatible con RecipeDetailPage
+  Recipe _convertToRecipeModel(Map<String, dynamic> receta) {
+    return Recipe(
+      nombre: receta['nombre'] ?? '',
+      descripcion: '',
+      calorias: int.tryParse(receta['informacion_nutricional']?['calorias']?.toString() ?? '0') ?? 0,
+      tiempo: receta['tiempo_preparacion'] ?? '-',
+      dificultad: '',
+      categoria: selectedMealType,
+      ingredientes: (receta['ingredientes'] ?? receta['ingredientes_disponibles'] ?? []).map<String>((e) {
+        if (e is Map && e['ingrediente'] != null && e['cantidad'] != null) {
+          return '${e['ingrediente'] ?? e['nombre']}: ${e['cantidad']}';
+        } else if (e is Map && e['nombre'] != null && e['cantidad'] != null) {
+          return '${e['nombre']}: ${e['cantidad']}';
+        } else if (e is String) {
+          return e;
+        } else {
+          return e.toString();
+        }
+      }).toList(),
+      pasos: (receta['preparacion'] ?? []).map<String>((e) => e.toString()).toList(),
+      imagen: 'assets/images/recetas/default_recipe.png',
+    );
   }
 }
