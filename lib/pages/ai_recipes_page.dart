@@ -7,6 +7,9 @@ import 'dart:convert';
 import 'package:tudespensa/Utils/preferences.dart';
 import 'package:tudespensa/pages/despensa_page.dart';
 import 'package:tudespensa/pages/home_page.dart';
+import 'package:tudespensa/provider/profile_provider.dart';
+import 'package:tudespensa/pages/premium_page.dart';
+import 'package:provider/provider.dart';
 
 class AIRecipesPage extends StatefulWidget {
   const AIRecipesPage({super.key});
@@ -23,6 +26,7 @@ class _AIRecipesPageState extends State<AIRecipesPage> {
   Map<String, dynamic>? recipeData;
   List<Map<String, dynamic>>? availableRecipes;
   List<Map<String, dynamic>>? complementRecipes;
+  int freeUserRecipeCount = 0; // Contador de generaciones IA para gratuitos
 
   @override
   void initState() {
@@ -45,6 +49,20 @@ class _AIRecipesPageState extends State<AIRecipesPage> {
 
   Future<void> fetchRecipe() async {
     if (selectedMealType == null) return;
+
+    // Obtener si el usuario es premium
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    final isPremium = (profileProvider.userModel?.plan.toLowerCase() == 'premium' || profileProvider.userModel?.role.toLowerCase() == 'premium');
+
+    // Lógica de límite para usuarios gratuitos
+    if (!isPremium) {
+      if (freeUserRecipeCount >= 2) {
+        _showPremiumDialog();
+        return;
+      } else {
+        freeUserRecipeCount++;
+      }
+    }
 
     setState(() {
       isLoading = true;
@@ -618,6 +636,39 @@ class _AIRecipesPageState extends State<AIRecipesPage> {
           },
         ),
       ],
+    );
+  }
+
+  void _showPremiumDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.lock, color: Colors.amber, size: 28),
+            SizedBox(width: 8),
+            Text('Hazte Premium'),
+          ],
+        ),
+        content: Text('¡Conviértete en usuario premium para generar recetas ilimitadas con IA!'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancelar'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PremiumPage()),
+              );
+            },
+            child: Text('Ver Premium'),
+          ),
+        ],
+      ),
     );
   }
 

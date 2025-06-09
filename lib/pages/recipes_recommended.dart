@@ -135,25 +135,6 @@ class _RecipesRecommendedState extends State<RecipesRecommended> {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Calorías recomendadas por comida:',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text('Desayuno: ${caloriesProvider.calories?.desayuno ?? 0} kcal'),
-                Text('Almuerzo: ${caloriesProvider.calories?.almuerzo ?? 0} kcal'),
-                Text('Cena: ${caloriesProvider.calories?.cena ?? 0} kcal'),
-              ],
-            ),
-          ),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16),

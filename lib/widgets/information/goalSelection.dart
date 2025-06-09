@@ -23,8 +23,9 @@ class ObjetivoUsuario extends StatelessWidget {
         }
 
         final objetivo = profileProvider.userModel?.goal ?? 'No definido';
+        final isPremium = (profileProvider.userModel?.plan.toLowerCase() == 'premium' || profileProvider.userModel?.role.toLowerCase() == 'premium');
 
-        return Card(
+        Widget card = Card(
           elevation: 4,
           margin: EdgeInsets.symmetric(horizontal: 16),
           shape: RoundedRectangleBorder(
@@ -98,6 +99,12 @@ class ObjetivoUsuario extends StatelessWidget {
             ),
           ),
         );
+
+        if (isPremium) {
+          return card;
+        } else {
+          return card;
+        }
       },
     );
   }

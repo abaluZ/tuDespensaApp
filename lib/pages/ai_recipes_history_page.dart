@@ -4,6 +4,9 @@ import 'package:tudespensa/Utils/preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:tudespensa/Models/recipe_model.dart';
+import 'package:provider/provider.dart';
+import 'package:tudespensa/provider/profile_provider.dart';
+import 'package:tudespensa/pages/premium_page.dart';
 
 class AIRecipesHistoryPage extends StatefulWidget {
   const AIRecipesHistoryPage({super.key});
@@ -67,6 +70,9 @@ class _AIRecipesHistoryPageState extends State<AIRecipesHistoryPage> {
   @override
   Widget build(BuildContext context) {
     final recetas = historial[selectedMealType] ?? [];
+    // Obtengo el estado premium del usuario
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: true);
+    final isPremium = (profileProvider.userModel?.plan?.toLowerCase() == 'premium' || profileProvider.userModel?.role?.toLowerCase() == 'premium');
     return Scaffold(
       appBar: AppBar(
         title: const Text('Historial de Recetas IA'),
@@ -105,79 +111,135 @@ class _AIRecipesHistoryPageState extends State<AIRecipesHistoryPage> {
                           final infoNutri = receta['informacion_nutricional'] ?? {};
                           final calorias = infoNutri['calorias']?.toString() ?? '-';
                           final tiempo = receta['tiempo_preparacion'] ?? '-';
-                          // Imagen por defecto
                           final imagen = 'assets/images/recetas/default_recipe.png';
-                          return Card(
-                            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            elevation: 2,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(16),
-                                    bottomLeft: Radius.circular(16),
-                                  ),
-                                  child: Image.asset(
-                                    imagen,
-                                    width: 90,
-                                    height: 90,
-                                    fit: BoxFit.cover,
-                                  ),
+                          return Stack(
+                            children: [
+                              Card(
+                                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
                                 ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(12),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          nombre,
-                                          style: const TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Row(
+                                elevation: 2,
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(16),
+                                        bottomLeft: Radius.circular(16),
+                                      ),
+                                      child: Image.asset(
+                                        imagen,
+                                        width: 90,
+                                        height: 90,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(12),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            const Icon(Icons.local_fire_department, color: Colors.orange, size: 18),
-                                            const SizedBox(width: 4),
-                                            Text('$calorias kcal', style: const TextStyle(fontSize: 14)),
-                                            const SizedBox(width: 16),
-                                            const Icon(Icons.timer, color: Colors.black54, size: 18),
-                                            const SizedBox(width: 4),
-                                            Text('$tiempo', style: const TextStyle(fontSize: 14)),
+                                            Text(
+                                              nombre,
+                                              style: const TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Row(
+                                              children: [
+                                                const Icon(Icons.local_fire_department, color: Colors.orange, size: 18),
+                                                const SizedBox(width: 4),
+                                                Text('$calorias kcal', style: const TextStyle(fontSize: 14)),
+                                                const SizedBox(width: 16),
+                                                const Icon(Icons.timer, color: Colors.black54, size: 18),
+                                                const SizedBox(width: 4),
+                                                Text('$tiempo', style: const TextStyle(fontSize: 14)),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: isPremium
+                                                  ? TextButton(
+                                                      onPressed: () {
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) => RecipeDetailPage(
+                                                              recipe: _convertToRecipeModel(receta),
+                                                            ),
+                                                          ),
+                                                        );
+                                                      },
+                                                      child: const Text('Ver receta'),
+                                                    )
+                                                  : Container(
+                                                      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.purple[50],
+                                                        borderRadius: BorderRadius.circular(8),
+                                                      ),
+                                                      child: Row(
+                                                        mainAxisSize: MainAxisSize.min,
+                                                        children: [
+                                                          Icon(Icons.lock, color: Colors.purple, size: 18),
+                                                          SizedBox(width: 6),
+                                                          Text('Premium', style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold)),
+                                                        ],
+                                                      ),
+                                                    ),
+                                            ),
                                           ],
                                         ),
-                                        const SizedBox(height: 8),
-                                        Align(
-                                          alignment: Alignment.centerRight,
-                                          child: TextButton(
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (!isPremium)
+                                Positioned.fill(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.80),
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: Center(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.lock, color: Colors.purple, size: 36),
+                                          SizedBox(height: 8),
+                                          Text('Solo para usuarios Premium', style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold)),
+                                          SizedBox(height: 8),
+                                          ElevatedButton.icon(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.purple,
+                                              foregroundColor: Colors.white,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(8),
+                                              ),
+                                            ),
                                             onPressed: () {
                                               Navigator.push(
                                                 context,
-                                                MaterialPageRoute(
-                                                  builder: (context) => RecipeDetailPage(
-                                                    recipe: _convertToRecipeModel(receta),
-                                                  ),
-                                                ),
+                                                MaterialPageRoute(builder: (context) => PremiumPage()),
                                               );
                                             },
-                                            child: const Text('Ver receta'),
+                                            icon: Icon(Icons.star),
+                                            label: Text('Hazte Premium'),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
+                            ],
                           );
                         },
                       ),

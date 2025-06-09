@@ -66,25 +66,6 @@ class RecipeDetailPage extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Sección de Contenido Premium
-            Column(
-              children: [
-                const Text(
-                  'Para acceder a cientos de deliciosas recetas, debes ser un usuario PREMIUM!',
-                  style: TextStyle(color: Colors.grey),
-                ),
-                const SizedBox(height: 8),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // Navegar a la página de suscripción premium
-                  },
-                  icon: const Icon(Icons.lock),
-                  label: const Text('Premium'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-
             // Sección de Ingredientes
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
