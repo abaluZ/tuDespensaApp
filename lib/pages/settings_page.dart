@@ -107,7 +107,7 @@ class AjustesPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const CuentaPage(),
+                    builder: (context) => const AccountPage(),
                   ),
                 );
               },
