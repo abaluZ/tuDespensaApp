@@ -7,6 +7,10 @@ import 'package:tudespensa/provider/auth_provider.dart';
 import 'package:tudespensa/provider/profile_provider.dart';
 import 'package:tudespensa/widgets/appBarV.dart';
 import 'package:tudespensa/pages/login_request_page.dart';
+import 'package:tudespensa/pages/premium_page.dart';
+import 'package:tudespensa/pages/buy_premium_page.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountPage extends StatelessWidget {
   const AccountPage({super.key});
@@ -150,6 +154,122 @@ class AccountPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 40),
+              if ((user?.plan.toLowerCase() ?? '') == 'gratuito')
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => PremiumPage()),
+                      );
+                    },
+                    icon: Icon(Icons.workspace_premium, color: Colors.white),
+                    label: Text('Conviértete a Premium', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.amber[800],
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 4,
+                    ),
+                  ),
+                )
+              else if ((user?.plan.toLowerCase() ?? '') == 'premium')
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      final option = await showModalBottomSheet<String>(
+                        context: context,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                        ),
+                        builder: (context) => Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ListTile(
+                              leading: Icon(Icons.swap_horiz, color: Colors.amber[800]),
+                              title: Text('Cambiar plan'),
+                              onTap: () => Navigator.pop(context, 'cambiar'),
+                            ),
+                            ListTile(
+                              leading: Icon(Icons.cancel, color: Colors.red[700]),
+                              title: Text('Cancelar suscripción'),
+                              onTap: () => Navigator.pop(context, 'cancelar'),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (option == 'cambiar') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => CompraPage()),
+                        );
+                      } else if (option == 'cancelar') {
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('Cancelar suscripción'),
+                            content: Text('¿Estás seguro de que quieres cancelar tu suscripción premium?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, false),
+                                child: Text('No'),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, true),
+                                child: Text('Sí'),
+                              ),
+                            ],
+                          ),
+                        );
+                        if (confirm == true) {
+                          // Llamar endpoint downgrade
+                          final prefs = await SharedPreferences.getInstance();
+                          final token = prefs.getString('auth_token');
+                          if (token != null) {
+                            final response = await http.put(
+                              Uri.parse('http://192.168.1.5:4000/api/users/downgrade-plan'),
+                              headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer $token',
+                              },
+                            );
+                            if (response.statusCode == 200) {
+                              await Provider.of<ProfileProvider>(context, listen: false).fetchUserProfile();
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Suscripción cancelada. Ahora eres usuario gratuito.'), backgroundColor: Colors.green),
+                                );
+                              }
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Error al cancelar la suscripción'), backgroundColor: Colors.red),
+                              );
+                            }
+                          }
+                        }
+                      }
+                    },
+                    icon: Icon(Icons.settings, color: Colors.white),
+                    label: Text('Modificar Suscripción', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.amber[800],
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 4,
+                    ),
+                  ),
+                ),
+              // Espacio entre botones de suscripción y cerrar sesión
+              if ((user?.plan.toLowerCase() ?? '') == 'gratuito' || (user?.plan.toLowerCase() ?? '') == 'premium')
+                const SizedBox(height: 18),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(

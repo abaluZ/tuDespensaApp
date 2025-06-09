@@ -7,6 +7,7 @@ import 'package:tudespensa/Models/recipe_model.dart';
 import 'package:provider/provider.dart';
 import 'package:tudespensa/provider/profile_provider.dart';
 import 'package:tudespensa/pages/premium_page.dart';
+import '../provider/favorites_provider.dart';
 
 class AIRecipesHistoryPage extends StatefulWidget {
   const AIRecipesHistoryPage({super.key});
@@ -141,25 +142,67 @@ class _AIRecipesHistoryPageState extends State<AIRecipesHistoryPage> {
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Text(
-                                              nombre,
-                                              style: const TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    nombre,
+                                                    style: const TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                    maxLines: 2,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                                Consumer<FavoritesProvider>(
+                                                  builder: (context, favoritesProvider, _) {
+                                                    final recipeModel = _convertToRecipeModel(receta);
+                                                    final isFavorite = favoritesProvider.isFavorite(recipeModel);
+                                                    return IconButton(
+                                                      icon: Icon(
+                                                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                                                        color: isFavorite ? Colors.red : Colors.grey,
+                                                        size: 22,
+                                                      ),
+                                                      constraints: const BoxConstraints(minWidth: 30, minHeight: 30),
+                                                      padding: EdgeInsets.zero,
+                                                      onPressed: () {
+                                                        favoritesProvider.toggleFavorite(recipeModel);
+                                                      },
+                                                    );
+                                                  },
+                                                ),
+                                              ],
                                             ),
                                             const SizedBox(height: 8),
                                             Row(
                                               children: [
                                                 const Icon(Icons.local_fire_department, color: Colors.orange, size: 18),
                                                 const SizedBox(width: 4),
-                                                Text('$calorias kcal', style: const TextStyle(fontSize: 14)),
-                                                const SizedBox(width: 16),
+                                                Expanded(
+                                                  child: Text(
+                                                    '$calorias kcal (aproximadamente)',
+                                                    style: const TextStyle(fontSize: 14),
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Row(
+                                              children: [
                                                 const Icon(Icons.timer, color: Colors.black54, size: 18),
                                                 const SizedBox(width: 4),
-                                                Text('$tiempo', style: const TextStyle(fontSize: 14)),
+                                                Expanded(
+                                                  child: Text(
+                                                    '$tiempo',
+                                                    style: const TextStyle(fontSize: 14),
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                ),
                                               ],
                                             ),
                                             const SizedBox(height: 8),
