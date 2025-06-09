@@ -31,6 +31,29 @@ class _InformationPageState extends State<UpdateInformationPage> {
   final _formKey = GlobalKey<FormState>();
 
   @override
+  void initState() {
+    super.initState();
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    final user = profileProvider.userModel;
+    if (user != null) {
+      nombreController.text = user.nombre;
+      apellidosController.text = user.apellidos;
+      estaturaController.text = user.estatura;
+      pesoController.text = user.peso;
+      edadController.text = user.edad;
+      if (user.edad.isNotEmpty) {
+        selectedDate = DateTime.tryParse(user.edad);
+      }
+      final genderProvider = Provider.of<GenderProvider>(context, listen: false);
+      if (user.genero.toLowerCase() == 'masculino') {
+        genderProvider.changeGender(true);
+      } else if (user.genero.toLowerCase() == 'femenino') {
+        genderProvider.changeGender(false);
+      }
+    }
+  }
+
+  @override
   void dispose() {
     nombreController.dispose();
     apellidosController.dispose();
@@ -154,12 +177,17 @@ class _InformationPageState extends State<UpdateInformationPage> {
                 : InformationButton(
                     onSave: () async {
                       if (_formKey.currentState!.validate()) {
+                        final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+                        final user = profileProvider.userModel;
+                        final fechaFinal = selectedDate != null
+                          ? selectedDate!.toIso8601String()
+                          : (user?.edad ?? '');
                         final success = await provider.updateInformation(
                           nombreController.text,
                           apellidosController.text,
                           estaturaController.text,
                           pesoController.text,
-                          selectedDate?.toIso8601String() ?? '',
+                          fechaFinal,
                           genderProvider.genderAsText!,
                         );
                         if (success) {
